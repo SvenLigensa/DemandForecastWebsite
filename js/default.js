@@ -161,14 +161,15 @@ function updatePlot() {
 }
 
 // --- Updates one graph by ---
-function updateGraph(vector, color, name) {
-    drawPoints(vector, color, name);
+function updateGraph(vector, color) {
+    drawPoints(vector, color);
     drawLines(vector, color);
 }
 
 function reloadAxes() {
     deleteOldPlot();
     createNewPlot();
+    showLegend();
 }
 
 function deleteOldPlot() {
@@ -198,7 +199,43 @@ function createNewPlot() {
     svg.append("g").call(yAxis);
 }
 
-function drawPoints(vector, color, name) {
+function showLegend() {
+    
+    // TODO: Clean up the code
+
+    var textWrapper = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    textWrapper.setAttributeNS(null, "x", 20);
+    textWrapper.setAttributeNS(null, "y", 10);
+    textWrapper.setAttributeNS(null, "fill", input_data_color);
+    textWrapper.setAttributeNS(null, "font-size", "10");
+
+    var textNode = document.createTextNode("Input");
+    textWrapper.appendChild(textNode);
+    document.getElementById("svg").appendChild(textWrapper);
+
+    var textWrapper = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    textWrapper.setAttributeNS(null, "x", 60);
+    textWrapper.setAttributeNS(null, "y", 10);
+    textWrapper.setAttributeNS(null, "fill", moving_average_color);
+    textWrapper.setAttributeNS(null, "font-size", "10");
+
+    var textNode = document.createTextNode("Moving Average");
+    textWrapper.appendChild(textNode);
+    document.getElementById("svg").appendChild(textWrapper);
+
+    var textWrapper = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    textWrapper.setAttributeNS(null, "x", 150);
+    textWrapper.setAttributeNS(null, "y", 10);
+    textWrapper.setAttributeNS(null, "fill", single_exponential_smoothing_color);
+    textWrapper.setAttributeNS(null, "font-size", "10");
+
+    var textNode = document.createTextNode("Single Exponential Smoothing");
+    textWrapper.appendChild(textNode);
+    document.getElementById("svg").appendChild(textWrapper);
+
+}
+
+function drawPoints(vector, color) {
     vector.forEach(function (item, index) {
         if (!isNaN(vector[index])) {
             $(document.createElementNS('http://www.w3.org/2000/svg', 'circle')).attr({
@@ -209,18 +246,6 @@ function drawPoints(vector, color, name) {
                 fill: color,
                 stroke: color,
             }).appendTo("#svg");
-
-            // TODO: Clean up the code
-
-            var textWrapper = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            textWrapper.setAttributeNS(null, "x", (x(index + 1)) + 3);
-            textWrapper.setAttributeNS(null, "y", (y(vector[index])) - 3);
-            textWrapper.setAttributeNS(null, "fill", color);
-            textWrapper.setAttributeNS(null, "font-size", "10");
-
-            var textNode = document.createTextNode(name);
-            textWrapper.appendChild(textNode);
-            document.getElementById("svg").appendChild(textWrapper);
         }
     });
 }
