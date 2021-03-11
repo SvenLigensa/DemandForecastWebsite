@@ -1,100 +1,118 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Demand Forecast</title>
-        <meta charset="utf-8">
-        <link rel="stylesheet" href="css/styles.css">
-        <link rel="preconnect" href="https://fonts.gstatic.com">
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
-    </head>
-    <body>
-        <header>
-            <nav class="navbar">
-                <ul class="navlist">
-                    <li><a href="#DemandForecast">Demand Forecast</a></li>
-                    <li><a href="#Algorithms">Algorithms</a></li>
-                </ul>
-            </nav>
-            <div class="welcome">
-                <h1 class="text-center">Welcome to my first Website</h1>
+
+<head>
+  <title>Demand Forecast</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <header>
+    <nav class="navbar">
+      <ul class="navlist">
+        <li><a href="#DemandForecast">Demand Forecast</a></li>
+        <li><a href="#Algorithms">Algorithms</a></li>
+      </ul>
+    </nav>
+    <div class="welcome">
+      <h1 class="text-center">Welcome To My First Website</h1>
+    </div>
+  </header>
+  <main>
+    <section class="basic-section" id="DemandForecast">
+      <h1 id="title">Demand Forecast</h1>
+      <hr>
+      <div class="horizontal">
+        <div class="vertical">
+          <div id="main_content">
+            <li class="selectable notselected" id="input">Input</li>
+            <li class="selectable notselected" id="ma">Moving Average</li>
+            <li class="selectable notselected" id="ses">Single Exponential Smoothing</li>
+
+            <div id="page-content">
+              <div id="start-content-inner">
+                Select the tabs to do nice things.
+              </div>
             </div>
-        </header>
-        <main>
-            <section class="basic-section" id="DemandForecast">
-                <h1 id="title">Demand Forecast</h1>
-                <hr>
-                <div class="horizontal">
-                
-                    <div class="vertical">
-                        <!-- Data input form -->
-                        <div>Enter your data here:</div>
-                        <div>
-                            <input class="form-text" type="number" id="demand" placeholder="Demand in next period" value="100">
-                            <input class="btn" id="add-data" type="submit" value="Add data point">
-                            <input class="btn" id="delete-data" type="submit" value="Delete last data point">
-                        </div>
-                        <hr>
-                        <!-- Table displaying the input data -->
-                        <div id="input_data_table" class="table">
-                            <div class="row">
-                                <div class="cell table_heading">Time</div>
-                                <div class="cell table_heading">Demand</div>
-                            </div>
-                        </div>
-                        <hr>
-                        
-                        <div class="horizontal">
-                            <p class="big-text">Moving Average</p>
-                            <input class="btn" id="toggle-visibility" type="submit" value="Toggle">
-                        </div>
-                        
-                        <div class="hidden" id="moving-average">
-                            <div class="horizontal">
-                                <div>Number of periods:&nbsp;</div>
-                                <div id="n-value">3</div>
-                            </div>
-                            <div>
-                                <input class="form-text" type="number" id="n" placeholder="Number of periods" value="3">
-                                <input class="btn" id="set-n" type="submit" value="Set number of periods">
-                                <input class="btn" id="calculate-moving-average" type="submit" value="Calculate Moving Average">
-                            </div>
-                            <div id="n-value"></div>
-                            <div id="moving_average_table" class="table">
-                                <div class="row">
-                                    <div class="cell table_heading">Time</div>
-                                    <div class="cell table_heading">Moving Average</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="vertical">
-                        <!-- Plotting the data in a coordinate system -->
-                        <div id="svgcontainer" class="svg"></div>
-                        <div class="info-section" id="info-section">
-                            <input class="btn" id="toggle-y-scale" type="submit" value="Toggle Y-Axis">
-                            <div id="y-axis-description">
-                                <div id="y-axis-description-min-max">Y axis scaling from min to max</div>
-                            </div>
-                            <br>
-                            <input class="btn" id="toggle-offset" type="submit" value="Toggle Offset">
-                            <div id="offset-description">
-                                <div id="offset-false">Moving average in period i includes value of period i</div>
-                            </div>
-                        </div>
-                    </div>
+
+            <div class="hidden_content" id="start-content">
+            </div>
+            <div class="hidden_content" id="input-content">
+              <div id="input-content-inner">
+                <!-- Data input form -->
+                <div>Enter your data here:</div>
+                <div>
+                  <input class="form-text" type="number" id="input-data" placeholder="Demand in next period" value="100">
+                  <input class="btn" id="set-input-data" type="submit" value="Add data point">
+                  <input class="btn" id="delete-data" type="submit" value="Delete last data point">
                 </div>
-                <hr>
-            </section>
-            <section class="basic-section" id="Algorithms">
-                <h1>Algorithms</h1>
-            </section>
-        </main>
-        <footer class="footer">
-            <a class="footer-link" href="https://www.google.com", target="_blank">Link to google.com</a>
-        </footer>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://d3js.org/d3.v6.min.js"></script>
-        <script src="js/default.js" type="text/javascript"></script>
-    </body>
+                <!-- Table displaying the input data -->
+                <div id="input_data_table" class="table">
+                  <div class="row">
+                    <div class="cell table_heading">Time</div>
+                    <div class="cell table_heading">Demand</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="hidden_content" id="ma-content">
+              <div id="ma-content-inner">
+                <div class="horizontal">
+                  <div>Number of periods:&nbsp;</div>
+                  <div id="n-value">3</div>
+                </div>
+                <div>
+                  <input class="form-text" type="number" id="set-n" placeholder="Number of periods">
+                  <input class="btn" id="calculate-moving-average" type="submit" value="Calculate Moving Average">
+                </div>
+                <div id="n-value"></div>
+                <div id="moving_average_table" class="table">
+                  <div class="row">
+                    <div class="cell table_heading">Time</div>
+                    <div class="cell table_heading">Moving Average</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="hidden_content" id="ses-content">
+              <div id="ses-content-inner">
+                Single Exponential Smoothing (TODO)
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div class="vertical">
+          <!-- Plotting the data in a coordinate system -->
+          <div id="svgcontainer" class="svg"></div>
+          <div class="info-section" id="info-section">
+            <input class="btn" id="toggle-y-scale" type="submit" value="Toggle Y-Axis">
+            <div id="y-axis-description">
+              <div id="y-axis-description-min-max">Y axis scaling from min to max</div>
+            </div>
+            <br>
+            <input class="btn" id="toggle-offset" type="submit" value="Toggle Offset">
+            <div id="offset-description">
+              <div id="offset-false">Moving average in period i includes value of period i</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
+    </section>
+    <section class="basic-section" id="Algorithms">
+      <h1>Algorithms</h1>
+    </section>
+  </main>
+  <footer class="footer">
+    <a class="footer-link" href="https://www.google.com" , target="_blank">Link to google.com</a>
+  </footer>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <script src="js/default.js" type="text/javascript"></script>
+</body>
+
 </html>

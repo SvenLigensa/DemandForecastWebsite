@@ -99,15 +99,15 @@ h1{
 
 .svg{
     border: 1px solid black;
+    margin: 0 0 0 10px;
 }
-
 
 .horizontal{
     display: flex;
 }
 .vertical{
     flex: 50%;
-    margin: 20px;
+    margin: 10px 10px 10px 0;
 }
 
 .table{
@@ -119,22 +119,42 @@ h1{
     margin: 0 1em 0 0;
 }
 
-
-.hidden{
-    visibility: hidden;
-}
-.visible{
-    visibility: visible;
-}
-
-
 .info-section{
     margin: 10px 0 0 0;
 }
 
 
+#main_content li{
+    display: inline;
+    list-style-type: none;
+    background-color: #818181;
+    padding: 10px;
+    border-radius: 5px 5px 0 0;
+    color: #292A0A;
+    font-weight: bold;
+    cursor: pointer;
+}
 
 
+#main_content li.notselected{
+    background-color: #818181;
+    color: #292A0A;
+}
 
+#main_content li.selected{
+    background-color: #DCDCDC;
+    color: #292A0A;
+}
 
+#main_content .hidden_content{
+    display: none;
+    visibility: hidden;
+}
 
+#main_content #page-content{
+    background-color: #DCDCDC;
+    padding: 10px;
+    margin-top: 9px;
+    border-radius: 0 5px 5px 5px;
+    color: #292A0A;
+}
