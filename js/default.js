@@ -18,7 +18,7 @@ var y_start_0 = false;
 var forecast_offset = false;
 
 // Variables storing color information
-var input_data_color = "#58D68D";
+var input_data_color = "#00b003";
 var moving_average_color = "#E74C3C";
 var single_exponential_smoothing_color = "#3ea0fc";
 
@@ -27,8 +27,13 @@ var input_data = [];
 
 // Number of periods (Moving Average)
 var N = 3;
-// Prediction of moving average
+// Forecast of moving average
 var moving_average = [];
+
+
+// Smoothing factor
+var alpha = 0.2;
+// Forecast fo Single Exponential Smoothing
 var single_exponential_smoothing = [];
 
 // Stores the id of the currently active tab
@@ -36,13 +41,14 @@ var current_id = "start";
 
 
 // --- --- Functions --- ---
-document.getElementById("set-input-data").addEventListener("click", addInputData, false);
 document.getElementById("input-data").addEventListener("keyup", function (e) { if (e.key == "Enter") { addInputData(); } }, false);
-document.getElementById("calculate-moving-average").addEventListener("click", movingAverage, false);
 document.getElementById("set-n").addEventListener("keyup", function (e) { if (e.key == "Enter") { movingAverage(); } }, false);
-document.getElementById("delete-data").addEventListener("click", deleteInputData, false);
-document.getElementById("toggle-y-scale").addEventListener("click", toggleYScale, false);
-document.getElementById("toggle-offset").addEventListener("click", toggleOffset, false);
+document.getElementById("set-alpha").addEventListener("keyup", function(e) { if (e.key == "Enter") { singleExponentialSmoothing(); } }, false);
+//document.getElementById("set-input-data").addEventListener("click", addInputData, false);
+//document.getElementById("calculate-moving-average").addEventListener("click", movingAverage, false);
+//document.getElementById("delete-data").addEventListener("click", deleteInputData, false);
+//document.getElementById("toggle-y-scale").addEventListener("click", toggleYScale, false);
+//document.getElementById("toggle-offset").addEventListener("click", toggleOffset, false);
 
 /*
 // ### Possible option if multiple elements exist, where the Enter-functionality is needed ###
@@ -68,7 +74,7 @@ function initialize() {
 
 function removeCalculations() {
     removeMovingAverage();
-    //removeSingleExponentialSmoothing();
+    removeSingleExponentialSmoothing();
 }
 
 // --- Adds new value to input_data, displays it in the table, removes all calculations and updates the plot ---
@@ -95,9 +101,7 @@ function addInputData() {
 function deleteInputData() {
     deleteRow((input_data.length - 1), "input-data-table");
     input_data.pop();
-    // Clear the data and table of the moving average
-    deleteTableBodyById("moving-average-table");
-    moving_average = [];
+    removeCalculations();
     updatePlot();
 }
 
@@ -149,6 +153,17 @@ function showTab(id) {
     }
 }
 
+function useExampleData(bool) {
+    if (bool === true) {
+        // Fill input_data with example values
+        //input_data = [106.8, 129.2, 153.0, 149.1, 158.3, 132.9, 149.8, 140.3, 138.3, 152.2, 128.1];
+        input_data = [134.5, 106.8, 129.2, 153.0, 149.1, 158.3, 132.9, 149.8, 140.3, 138.3, 152.2, 128.1];
+        displayData(input_data, "input-data-table");
+        updatePlot();
+    }
+    document.getElementById("example-data-option").remove();
+}
+
 // #---# Plot functions #---#
 
 // --- Updates the whole plot with all graphs ---
@@ -156,8 +171,9 @@ function showTab(id) {
 // Necessary to update dynamically
 function updatePlot() {
     reloadAxes();
-    updateGraph(input_data, input_data_color, "Input");
-    updateGraph(moving_average, moving_average_color, "Moving Average");
+    updateGraph(input_data, input_data_color);
+    updateGraph(moving_average, moving_average_color);
+    updateGraph(single_exponential_smoothing, single_exponential_smoothing_color);
 }
 
 // --- Updates one graph by ---
@@ -181,9 +197,7 @@ function deleteOldPlot() {
 
 function createNewPlot() {
 
-    var biggest_x = d3.max([input_data.length, moving_average.length]);
-
-    x = d3.scaleLinear().domain([1, biggest_x]).range([margin.left, width - margin.right]);
+    x = d3.scaleLinear().domain([1, input_data.length+1]).range([margin.left, width - margin.right]);
     y = d3.scaleLinear().domain([y_start_0 ? 0 : d3.min(input_data), d3.max(input_data)]).range([height - margin.bottom, margin.top]);
     xAxis = g => g
         .attr("transform", 'translate(0,' + (height - margin.bottom) + ')')
@@ -200,7 +214,7 @@ function createNewPlot() {
 }
 
 function showLegend() {
-    
+
     // TODO: Clean up the code
 
     var textWrapper = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -325,6 +339,7 @@ function setN() {
     if (newN > 0) {
         N = newN;
         $("#n-value").text(N);
+        $("#set-n").val("");
     }
 }
 
@@ -373,10 +388,40 @@ function calculateMovingAverage() {
 
 // #---# Single Exponential Smoothing #---#
 
+function singleExponentialSmoothing() {
+    removeSingleExponentialSmoothing();
+    setAlpha();
+    calculateSingleExponentialSmoothing();
+    displayData(single_exponential_smoothing, "single-exponential-smoothing-table");
+    updatePlot();
+}
+
+// --- Set alpha for single exponential smoothing (only for 0 < alpha <= 1) ---
+function setAlpha() {
+    var newAlpha = $("#set-alpha").val();
+    if (newAlpha > 0 && newAlpha <= 1) {
+        alpha = newAlpha;
+        $("#alpha-value").text(alpha);
+        $("#set-alpha").val("0.");
+    }
+}
+
+function calculateSingleExponentialSmoothing() {
+    // Initialization
+    single_exponential_smoothing.push(NaN);
+    single_exponential_smoothing.push(input_data[0]);
+
+    // Computation
+    input_data.forEach(function (item, index) {
+        if (index > 0){
+            single_exponential_smoothing.push(item*alpha + (1-alpha)*single_exponential_smoothing[index]);
+        }
+    });
+}
+
 // --- Deletes everything regarding the single exponential smoothing ---
 function removeSingleExponentialSmoothing() {
     single_exponential_smoothing = [];
     deleteTableBodyById("single-exponential-smoothing-table");
-    //updateGraph(single_exponential_smoothing, single_exponential_smoothing_color, "Single Exponential Smoothing");
+    updateGraph(single_exponential_smoothing, single_exponential_smoothing_color, "Single Exponential Smoothing");
 }
-

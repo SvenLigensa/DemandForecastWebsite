@@ -27,15 +27,21 @@
       <hr>
       <div class="horizontal">
         <div class="vertical">
+
+          <div class="horizontal" id="example-data-option">
+            <input class="btn" id="use-example-data" type="submit" value="Use example data" onclick="useExampleData(true)">
+            <input class="btn" id="no-example-data" type="submit" value="Don't use example data" onclick="useExampleData(false)">
+          </div>
+
           <div id="main_content">
-            <li class="disabled selectable" id="start">Start</li>
+            <li class="disabled selectable selected" id="start">Start</li>
             <li class="selectable" id="input" onclick="showTab(this.id)">Input</li>
             <li class="selectable" id="ma" onclick="showTab(this.id)">Moving Average</li>
-            <li class="disabled selectable" id="ses" onclick="showTab(this.id)">Single Exponential Smoothing</li>
+            <li class="selectable" id="ses" onclick="showTab(this.id)">Single Exponential Smoothing</li>
 
             <div id="page-content">
               <div id="start-content-inner">
-                Select the tabs to do nice things.
+                Select the tabs to do nice things. Have fun and play around with different parameters.
               </div>
             </div>
 
@@ -46,10 +52,9 @@
                 <!-- Data input form -->
                 <div>Enter your data here:</div>
                 <div>
-                  <input class="form-text" type="number" id="input-data" placeholder="Demand in next period"
-                    value="100">
-                  <input class="btn" id="set-input-data" type="submit" value="Add data point">
-                  <input class="btn" id="delete-data" type="submit" value="Delete last data point">
+                  <input class="form-text" type="number" id="input-data" placeholder="Demand in next period">
+                  <input class="btn" id="set-input-data" type="submit" value="Add data point" onclick="addInputData()">
+                  <input class="btn" id="delete-data" type="submit" value="Delete last data point" onclick="deleteInputData()">
                 </div>
                 <!-- Table displaying the input data -->
                 <div id="input-data-table-outer" class="table">
@@ -69,8 +74,8 @@
                   <div id="n-value">3</div>
                 </div>
                 <div>
-                  <input class="form-text" type="number" id="set-n" placeholder="Number of periods">
-                  <input class="btn" id="calculate-moving-average" type="submit" value="Calculate Moving Average">
+                  <input class="form-text" type="number" id="set-n" placeholder="Number of periods" min="1">
+                  <input class="btn" id="calculate-moving-average" type="submit" value="Calculate Moving Average" onclick="movingAverage()">
                 </div>
                 <div id="n-value"></div>
                 <div id="moving-average-table-outer" class="table">
@@ -86,12 +91,13 @@
             <div class="hidden_content" id="ses-content">
               <div id="ses-content-inner">
                 <div class="horizontal">
-                  <div>alpha value:&nbsp;</div>
+                  <div>Alpha value:&nbsp;</div>
                   <div id="alpha-value">0.2</div>
                 </div>
                 <div>
-                  <input class="form-text" type="number" id="set-alpha" placeholder="alpha value">
-                  <input class="btn" id="calculate-single-exponential-smoothing" type="submit" value="Calculate Single Exponential Smoothing">
+                  <input class="form-text" type="number" id="set-alpha" placeholder="Alpha value" min="0.1" max="1" step="0.1" value="0.">
+                  <input class="btn" id="calculate-single-exponential-smoothing" type="submit"
+                    value="Calculate Single Exponential Smoothing" onclick="singleExponentialSmoothing()">
                 </div>
                 <div id="n-value"></div>
                 <div id="single-exponential-smoothing-table-outer" class="table">
@@ -111,12 +117,12 @@
           <!-- Plotting the data in a coordinate system -->
           <div id="svgcontainer" class="svg"></div>
           <div class="info-section" id="info-section">
-            <input class="btn" id="toggle-y-scale" type="submit" value="Toggle Y-Axis">
+            <input class="btn" id="toggle-y-scale" type="submit" value="Toggle Y-Axis" onclick="toggleYScale()">
             <div id="y-axis-description">
               <div id="y-axis-description-min-max">Y axis scaling from min to max</div>
             </div>
             <br>
-            <input class="btn" id="toggle-offset" type="submit" value="Toggle Offset">
+            <input class="btn" id="toggle-offset" type="submit" value="Toggle Offset" onclick="toggleOffset()">
             <div id="offset-description">
               <div id="offset-false">Moving average in period i includes value of period i</div>
             </div>

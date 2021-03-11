@@ -85,8 +85,6 @@ h1{
     width: 100px;
     padding: 2px;
 }
-.cell
-
 
 
 .table_heading{
@@ -125,6 +123,13 @@ h1{
     margin: 10px 0 0 0;
 }
 
+#example-data-option{
+    background-color: #ff8383;
+    padding: 10px;
+    margin: 0 0 20px 0;
+    border-radius: 5px;
+}
+
 
 #main_content li{
     display: inline;
@@ -137,9 +142,23 @@ h1{
     cursor: pointer;
 }
 
+#main_content #input{
+    color: #00b003;
+}
+
+#main_content #ma{
+    color: #E74C3C;
+}
+
+#main_content #ses{
+    color: #3ea0fc;
+}
+
 #main_content li.selected{
     background-color: #DCDCDC;
-    color: #292A0A;
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: #000;
 }
 
 #main_content .hidden_content{
@@ -153,6 +172,7 @@ h1{
     margin-top: 9px;
     border-radius: 0 5px 5px 5px;
     color: #292A0A;
+    border: 1px solid #000;
 }
 
 #main_content .disabled{
