@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
 </head>
 
-<body>
+<body onload="initialize()">
   <header>
     <nav class="navbar">
       <ul class="navlist">
@@ -29,9 +29,9 @@
         <div class="vertical">
           <div id="main_content">
             <li class="disabled selectable" id="start">Start</li>
-            <li class="selectable" id="input">Input</li>
-            <li class="selectable" id="ma">Moving Average</li>
-            <li class="disabled selectable" id="ses">Single Exponential Smoothing</li>
+            <li class="selectable" id="input" onclick="showTab(this.id)">Input</li>
+            <li class="selectable" id="ma" onclick="showTab(this.id)">Moving Average</li>
+            <li class="disabled selectable" id="ses" onclick="showTab(this.id)">Single Exponential Smoothing</li>
 
             <div id="page-content">
               <div id="start-content-inner">
@@ -46,15 +46,18 @@
                 <!-- Data input form -->
                 <div>Enter your data here:</div>
                 <div>
-                  <input class="form-text" type="number" id="input-data" placeholder="Demand in next period" value="100">
+                  <input class="form-text" type="number" id="input-data" placeholder="Demand in next period"
+                    value="100">
                   <input class="btn" id="set-input-data" type="submit" value="Add data point">
                   <input class="btn" id="delete-data" type="submit" value="Delete last data point">
                 </div>
                 <!-- Table displaying the input data -->
-                <div id="input_data_table" class="table">
-                  <div class="row">
+                <div id="input-data-table-outer" class="table">
+                  <div class="row" id="input-data-table-header">
                     <div class="cell table_heading">Time</div>
                     <div class="cell table_heading">Demand</div>
+                  </div>
+                  <div id="input-data-table">
                   </div>
                 </div>
               </div>
@@ -70,17 +73,35 @@
                   <input class="btn" id="calculate-moving-average" type="submit" value="Calculate Moving Average">
                 </div>
                 <div id="n-value"></div>
-                <div id="moving_average_table" class="table">
-                  <div class="row">
+                <div id="moving-average-table-outer" class="table">
+                  <div class="row" id="moving-average-table-header">
                     <div class="cell table_heading">Time</div>
                     <div class="cell table_heading">Moving Average</div>
+                  </div>
+                  <div id="moving-average-table">
                   </div>
                 </div>
               </div>
             </div>
             <div class="hidden_content" id="ses-content">
               <div id="ses-content-inner">
-                Single Exponential Smoothing (TODO)
+                <div class="horizontal">
+                  <div>alpha value:&nbsp;</div>
+                  <div id="alpha-value">0.2</div>
+                </div>
+                <div>
+                  <input class="form-text" type="number" id="set-alpha" placeholder="alpha value">
+                  <input class="btn" id="calculate-single-exponential-smoothing" type="submit" value="Calculate Single Exponential Smoothing">
+                </div>
+                <div id="n-value"></div>
+                <div id="single-exponential-smoothing-table-outer" class="table">
+                  <div class="row" id="single-exponential-smoothing-table-header">
+                    <div class="cell table_heading">Time</div>
+                    <div class="cell table_heading">Single Exponential Smoothing</div>
+                  </div>
+                  <div id="single-exponential-smoothing-table">
+                  </div>
+                </div>
               </div>
             </div>
           </div>

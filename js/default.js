@@ -20,31 +20,58 @@ var forecast_offset = false;
 // Variables storing color information
 var input_data_color = "#58D68D";
 var moving_average_color = "#E74C3C";
+var single_exponential_smoothing_color = "#3ea0fc";
 
 // Stores the entered values
-var input_data = [];  // Renamed from data!
+var input_data = [];
 
 // Number of periods (Moving Average)
 var N = 3;
 // Prediction of moving average
 var moving_average = [];
+var single_exponential_smoothing = [];
 
 // Stores the id of the currently active tab
 var current_id = "start";
 
-// Initialize the plot
-updatePlots();
 
 // --- --- Functions --- ---
-
 document.getElementById("set-input-data").addEventListener("click", addInputData, false);
 document.getElementById("input-data").addEventListener("keyup", function (e) { if (e.key == "Enter") { addInputData(); } }, false);
 document.getElementById("calculate-moving-average").addEventListener("click", movingAverage, false);
 document.getElementById("set-n").addEventListener("keyup", function (e) { if (e.key == "Enter") { movingAverage(); } }, false);
 document.getElementById("delete-data").addEventListener("click", deleteInputData, false);
+document.getElementById("toggle-y-scale").addEventListener("click", toggleYScale, false);
+document.getElementById("toggle-offset").addEventListener("click", toggleOffset, false);
 
+/*
+// ### Possible option if multiple elements exist, where the Enter-functionality is needed ###
+// --- Add data when "Enter" is pressed ---
+// --- Create an EventListener for all elements with the class form-text ---
+var inputs = $(".form-text");
+// [... ] converts HTMLCollection to an array
+[...inputs].forEach(function (item, index) {
+    item.addEventListener("keyup", function (e) { if (e.key === "Enter") { pressEnter(item); } }, false);
+});
+// --- Execute the corresponding set- function of the element where Enter is pressed ---
+function pressEnter(element) {
+    $("#set-" + element.id + "").click();
+}
+*/
 
-// --- Add element ---
+// #---# General functions #---#
+
+function initialize() {
+    // Initialize the plot
+    updatePlot();
+}
+
+function removeCalculations() {
+    removeMovingAverage();
+    //removeSingleExponentialSmoothing();
+}
+
+// --- Adds new value to input_data, displays it in the table, removes all calculations and updates the plot ---
 function addInputData() {
     // Get value of number field
     var newValue = $("#input-data").val();
@@ -52,31 +79,90 @@ function addInputData() {
     if (newValue.length > 0) {
         // Add the value to the array
         input_data.push(Number(newValue));
-        addRow(input_data[input_data.length - 1], input_data.length - 1, "input_data_table");
-        // Clear the data and table of the moving average
-        eraseData(moving_average, "moving_average_table");
-        // Delete the moving_average data
-        moving_average = [];
+        addRow(input_data[input_data.length - 1], input_data.length - 1, "input-data-table");
 
-        updatePlots();
+        // Clear all calculations as they are not up to date anymore
+        // TODO: Alternative: continue calculations when already started
+        removeCalculations();
+
+        updatePlot();
     }
     // Clear the input field
     $("#input-data").val("");
 }
 
-// --- Updates the Plot with all graphs ---
-// Deletes the old plot and creates a new one
-// Should be called, when input_data is updated
-// Necessary to update the axes dynamically
-function updatePlots() {
-    reloadAxes();
-    updatePlot(input_data, input_data_color);
-    updatePlot(moving_average, moving_average_color);
+// --- Delete last input_data entry ---
+function deleteInputData() {
+    deleteRow((input_data.length - 1), "input-data-table");
+    input_data.pop();
+    // Clear the data and table of the moving average
+    deleteTableBodyById("moving-average-table");
+    moving_average = [];
+    updatePlot();
 }
 
-// --- Updates one graph ---
-function updatePlot(vector, color) {
-    drawPoints(vector, color);
+// --- Toggles the offset of the moving average ---
+// TODO: Toggle the offset of all calculations
+function toggleOffset() {
+    if (forecast_offset === true) {
+        $("#offset-description").append("<div id='offset-false'>Moving average in period i includes value of period i</div>")
+        document.getElementById("offset-true").remove();
+        // Remove the first NaN value of moving_average
+        moving_average.shift();
+        forecast_offset = false;
+    }
+    else {
+        $("#offset-description").append("<div id='offset-true'>Moving average in period i does not include value of period i (forecast)</div>")
+        document.getElementById("offset-false").remove();
+        // Insert NaN value at the start of moving_average
+        moving_average.unshift(Number(NaN));
+        forecast_offset = true;
+    }
+    // Update the moving-average-table
+    deleteTableBodyById("moving-average-table");
+    displayData(moving_average, "moving-average-table");
+    // Update the plot to show the shifted graph
+    updatePlot();
+}
+
+// --- Manage what tab to show (TODO: make function prettier) ---
+function showTab(id) {
+    var old_id = current_id;
+    current_id = id;
+
+    if (old_id == current_id) {
+        current_id = "start";
+    }
+
+    var oldChild = document.getElementById(old_id + "-content-inner");
+    var newChild = document.getElementById(current_id + "-content-inner");
+
+    document.getElementById("page-content").replaceChild(newChild, oldChild);
+
+    document.getElementById(old_id + "-content").appendChild(oldChild);
+
+    document.getElementById(old_id).classList.toggle('selected');
+    document.getElementById(current_id).classList.toggle('selected');
+
+    if (current_id != "start") {
+        document.getElementById(current_id).className = "selected";
+    }
+}
+
+// #---# Plot functions #---#
+
+// --- Updates the whole plot with all graphs ---
+// Deletes the old plot and creates a new one
+// Necessary to update dynamically
+function updatePlot() {
+    reloadAxes();
+    updateGraph(input_data, input_data_color, "Input");
+    updateGraph(moving_average, moving_average_color, "Moving Average");
+}
+
+// --- Updates one graph by ---
+function updateGraph(vector, color, name) {
+    drawPoints(vector, color, name);
     drawLines(vector, color);
 }
 
@@ -112,7 +198,7 @@ function createNewPlot() {
     svg.append("g").call(yAxis);
 }
 
-function drawPoints(vector, color) {
+function drawPoints(vector, color, name) {
     vector.forEach(function (item, index) {
         if (!isNaN(vector[index])) {
             $(document.createElementNS('http://www.w3.org/2000/svg', 'circle')).attr({
@@ -123,6 +209,18 @@ function drawPoints(vector, color) {
                 fill: color,
                 stroke: color,
             }).appendTo("#svg");
+
+            // TODO: Clean up the code
+
+            var textWrapper = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            textWrapper.setAttributeNS(null, "x", (x(index + 1)) + 3);
+            textWrapper.setAttributeNS(null, "y", (y(vector[index])) - 3);
+            textWrapper.setAttributeNS(null, "fill", color);
+            textWrapper.setAttributeNS(null, "font-size", "10");
+
+            var textNode = document.createTextNode(name);
+            textWrapper.appendChild(textNode);
+            document.getElementById("svg").appendChild(textWrapper);
         }
     });
 }
@@ -144,28 +242,57 @@ function drawLines(vector, color) {
     });
 }
 
-// --- Delete last input_data entry ---
-function deleteInputData() {
-    deleteRow(input_data.length, "input_data_table");
-    input_data.pop();
-    // Clear the data and table of the moving average
-    eraseData(moving_average, "moving_average_table");
-    moving_average = [];
-    updatePlots();
+// --- Toggles the y axis starting point (min(input_data) or 0) ---
+function toggleYScale() {
+    if (y_start_0 == true) {
+        $("#y-axis-description").append("<div id='y-axis-description-min-max'>Y axis scaling from min to max</div>");
+        document.getElementById("y-axis-description-0-max").remove();
+        y_start_0 = false;
+    }
+    else {
+        $("#y-axis-description").append("<div id='y-axis-description-0-max'>Y axis scaling from 0 to max</div>");
+        document.getElementById("y-axis-description-min-max").remove();
+        y_start_0 = true;
+    }
+    updatePlot();
 }
 
-// ### Possible option if multiple elements exist, where the Enter-functionality is needed ###
-// --- Add data when "Enter" is pressed ---
-// --- Create an EventListener for all elements with the class form-text ---
-//var inputs = $(".form-text");
-// [... ] converts HTMLCollection to an array
-//[...inputs].forEach(function (item, index) {
-//    item.addEventListener("keyup", function (e) { if (e.key === "Enter") { pressEnter(item); } }, false);
-//});
-// --- Execute the corresponding set- function of the element where Enter is pressed ---
-//function pressEnter(element) {
-//    $("#set-" + element.id + "").click();
-//}
+// #---# Table functions #---#
+
+// --- Displays the given vector in the given table ---
+function displayData(vector, table) {
+    vector.forEach(function (item, index) {
+        addRow(item, index, table);
+    });
+}
+
+// --- Adds one row to an existing table (id's starting with 1) ---
+function addRow(value, index, table) {
+    if (!isNaN(value)) {
+        $("#" + table).append("<div class='row' id= '" + table + "-row-" + (index + 1) + "'> <div class='cell'>" + (index + 1) + "</div> <div class='cell'>" + d3.format(".2f")(value) + "</div> </div>");
+    }
+}
+
+// --- Deletes all children of the element with the id ---
+function deleteTableBodyById(id) {
+    const myNode = document.getElementById(id);
+    // Only continue, when myNode exists
+    if (myNode !== null) {
+        while (myNode.lastElementChild) {
+            myNode.removeChild(myNode.lastElementChild);
+        }
+    }
+}
+
+// --- Deletes row with specific index (id's starting with 1) ---
+function deleteRow(index, table) {
+    var del_row = document.getElementById(table + "-row-" + (index + 1));
+    if (del_row != null) {
+        del_row.remove();
+    }
+}
+
+// #---# Moving Average #---#
 
 // --- Set N for moving average (only for positive N) ---
 function setN() {
@@ -176,43 +303,27 @@ function setN() {
     }
 }
 
-// --- Calculate and display moving average ---
+// --- Delete previous calculations if they exist, set the number of periods, ---
+// --- calculate and display the new moving average and update the plot accordingly ---
 function movingAverage() {
+    removeMovingAverage();
     setN();
     calculateMovingAverage();
-    displayData(moving_average, "moving_average_table");
-    updatePlot(moving_average, moving_average_color);
+    displayData(moving_average, "moving-average-table");
+    updatePlot();
 }
 
-// Displays the given vector in the given table
-function displayData(vector, table) {
-    console.log(vector);
-    vector.forEach(function (item, index) {
-        addRow(item, index, table);
-    });
-}
-
-// Adds one row to an existing table
-function addRow(value, index, table) {
-    if (!isNaN(value)) {
-        $("#" + table + "").append("<div class='row' id= '" + table + "_row" + (index + 1) + "'> <div class='cell'>" + (index + 1) + "</div> <div class='cell'>" + d3.format(".2f")(value) + "</div> </div>");
+// --- Deletes everything regarding the moving average ---
+function removeMovingAverage() {
+    moving_average = [];
+    if (forecast_offset === true) {
+        moving_average.push(NaN);
     }
+    deleteTableBodyById("moving-average-table");
+    updateGraph(moving_average, moving_average_color, "Moving Average");
 }
 
-function eraseData(vector, table) {
-    vector.forEach(function (item, index) {
-        deleteRow(index + 1, table);
-    });
-}
-
-function deleteRow(index, table) {
-    var del_row = document.getElementById(table + "_row" + index);
-    if (del_row != null) {
-        del_row.remove();
-    }
-}
-
-// --- Calculates the moving average of input_data for N periods
+// --- Calculates the moving average of input_data for N periods ---
 // Source: https://observablehq.com/@d3/moving-average
 function calculateMovingAverage() {
     var i = 0;
@@ -230,83 +341,17 @@ function calculateMovingAverage() {
     }
 
     means.forEach(function (item, index) {
-        moving_average[index] = Number(means[index]);
+        // If forecast_offset is true the index is incremented by 1
+        moving_average[index + forecast_offset] = Number(means[index]);
     });
-    console.log(moving_average);
 }
 
-// --- Toggles the y axis start
-$("#toggle-y-scale").on('click', function () {
+// #---# Single Exponential Smoothing #---#
 
-    if (y_start_0 == true) {
-        y_start_0 = false;
-        $("#y-axis-description").append("<div id='y-axis-description-min-max'>Y axis scaling from min to max</div>");
-        var old_description = document.getElementById("y-axis-description-0-max");
-        old_description.remove();
-    }
-    else {
-        y_start_0 = true;
-        $("#y-axis-description").append("<div id='y-axis-description-0-max'>Y axis scaling from 0 to max</div>");
-        var old_description = document.getElementById("y-axis-description-min-max");
-        old_description.remove();
-    }
-    updatePlots();
-});
+// --- Deletes everything regarding the single exponential smoothing ---
+function removeSingleExponentialSmoothing() {
+    single_exponential_smoothing = [];
+    deleteTableBodyById("single-exponential-smoothing-table");
+    //updateGraph(single_exponential_smoothing, single_exponential_smoothing_color, "Single Exponential Smoothing");
+}
 
-// --- Toggles the offset of the moving average ---
-// ERROR when pressed, before new moving average is calculated
-$("#toggle-offset").on('click', function () {
-    if (moving_average.length > 0) {
-        if (forecast_offset === true) {
-            forecast_offset = false;
-
-            $("#offset-description").append("<div id='offset-false'>Moving average in period i includes value of period i</div>")
-            var old_description = document.getElementById("offset-true");
-            old_description.remove();
-
-            moving_average.shift();
-
-        }
-        else {
-            forecast_offset = true;
-
-            $("#offset-description").append("<div id='offset-true'>Moving average in period i does not include value of period i (forecast)</div>")
-            var old_description = document.getElementById("offset-false");
-            old_description.remove();
-
-            moving_average.unshift(Number(NaN));
-        }
-        updatePlots();
-    }
-});
-
-// --- Manage what tab to show ---
-$(".selectable").on('click', function () {
-    var old_id = current_id;
-    var id = this.id;
-    current_id = id;
-
-    console.log(old_id);
-    console.log(current_id);
-
-
-    if (old_id == current_id) {
-        current_id = "start";
-    }
-
-    var oldChild = document.getElementById(old_id + "-content-inner");
-    var newChild = document.getElementById(current_id + "-content-inner");
-
-    document.getElementById("page-content").replaceChild(newChild, oldChild);
-
-    document.getElementById(old_id + "-content").appendChild(oldChild);
-
-    document.getElementById(old_id).classList.toggle('selected');
-    document.getElementById(current_id).classList.toggle('selected');
-
-    if (current_id != "start"){
-        document.getElementById(current_id).className = "selected";
-    }
-
-
-});
