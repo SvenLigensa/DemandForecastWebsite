@@ -1,12 +1,8 @@
 // --- --- Initialization --- ---
 
-// https://drive.google.com/drive/folders/1DDzK-aQ8csvOZT9Un-Vp22syeYbHDcBT
-// Test values: 106.8 129.2 153.0 149.1 158.3 132.9 149.8 140.3 138.3 152.2 128.1
-
 // Sources:
 // Calculate Moving Average: https://observablehq.com/@d3/moving-average
 // Format numbers: http://bl.ocks.org/zanarmstrong/05c1e95bf7aa16c4768e
-//
 
 // Dimensions of the coordinate system graphic
 var width = 500;
@@ -290,6 +286,10 @@ $(".selectable").on('click', function () {
     var id = this.id;
     current_id = id;
 
+    console.log(old_id);
+    console.log(current_id);
+
+
     if (old_id == current_id) {
         current_id = "start";
     }
@@ -301,10 +301,12 @@ $(".selectable").on('click', function () {
 
     document.getElementById(old_id + "-content").appendChild(oldChild);
 
-    document.getElementById("input").className = "notselected";
-    document.getElementById("ma").className = "notselected";
-    document.getElementById("ses").className = "notselected";
+    document.getElementById(old_id).classList.toggle('selected');
+    document.getElementById(current_id).classList.toggle('selected');
+
     if (current_id != "start"){
         document.getElementById(current_id).className = "selected";
     }
+
+
 });

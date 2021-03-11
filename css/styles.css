@@ -135,12 +135,6 @@ h1{
     cursor: pointer;
 }
 
-
-#main_content li.notselected{
-    background-color: #818181;
-    color: #292A0A;
-}
-
 #main_content li.selected{
     background-color: #DCDCDC;
     color: #292A0A;
@@ -157,4 +151,9 @@ h1{
     margin-top: 9px;
     border-radius: 0 5px 5px 5px;
     color: #292A0A;
+}
+
+#main_content .disabled{
+    display: none;
+    visibility: hidden;
 }
