@@ -15,7 +15,7 @@ var margin = ({ top: 15, right: 15, bottom: 25, left: 25 });
 var y_start_0 = false;
 // false: value of forecast includes value of the current period
 // true: value of forecast does not include value of the current period
-var forecast_offset = false;
+var forecast_offset = true;
 
 // Variables storing color information
 var input_data_color = "#00b003";
@@ -44,11 +44,6 @@ var current_id = "start";
 document.getElementById("input-data").addEventListener("keyup", function (e) { if (e.key == "Enter") { addInputData(); } }, false);
 document.getElementById("set-n").addEventListener("keyup", function (e) { if (e.key == "Enter") { movingAverage(); } }, false);
 document.getElementById("set-alpha").addEventListener("keyup", function(e) { if (e.key == "Enter") { singleExponentialSmoothing(); } }, false);
-//document.getElementById("set-input-data").addEventListener("click", addInputData, false);
-//document.getElementById("calculate-moving-average").addEventListener("click", movingAverage, false);
-//document.getElementById("delete-data").addEventListener("click", deleteInputData, false);
-//document.getElementById("toggle-y-scale").addEventListener("click", toggleYScale, false);
-//document.getElementById("toggle-offset").addEventListener("click", toggleOffset, false);
 
 /*
 // ### Possible option if multiple elements exist, where the Enter-functionality is needed ###
@@ -85,6 +80,11 @@ function addInputData() {
     if (newValue.length > 0) {
         // Add the value to the array
         input_data.push(Number(newValue));
+
+        // Don't use example data -> remove button
+        useExampleData(false);
+
+        // Show the new data in the input-data-table
         addRow(input_data[input_data.length - 1], input_data.length - 1, "input-data-table");
 
         // Clear all calculations as they are not up to date anymore
@@ -156,12 +156,15 @@ function showTab(id) {
 function useExampleData(bool) {
     if (bool === true) {
         // Fill input_data with example values
-        //input_data = [106.8, 129.2, 153.0, 149.1, 158.3, 132.9, 149.8, 140.3, 138.3, 152.2, 128.1];
-        input_data = [134.5, 106.8, 129.2, 153.0, 149.1, 158.3, 132.9, 149.8, 140.3, 138.3, 152.2, 128.1];
+        input_data = [106.8, 129.2, 153.0, 149.1, 158.3, 132.9, 149.8, 140.3, 138.3, 152.2, 128.1];
+        //input_data = [134.5, 106.8, 129.2, 153.0, 149.1, 158.3, 132.9, 149.8, 140.3, 138.3, 152.2, 128.1];
         displayData(input_data, "input-data-table");
         updatePlot();
     }
-    document.getElementById("example-data-option").remove();
+    var exampleDataBtn = document.getElementById("use-example-data");
+    if (exampleDataBtn !== null){
+        exampleDataBtn.remove();
+    }
 }
 
 // #---# Plot functions #---#

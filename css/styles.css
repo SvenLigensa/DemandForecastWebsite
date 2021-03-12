@@ -54,9 +54,9 @@ h1{
 .btn{
     padding: 5px;
     border-radius: 8px;
-    border: 1px solid #272d30c7;
+    border: 1px solid #585858;
     margin: 2px 5px 2px 0;
-    background-color: #272d30c7;
+    background-color: #585858;
     color: #d0d0d0;
 }
 .special-text{
@@ -123,21 +123,12 @@ h1{
     margin: 10px 0 0 0;
 }
 
-#example-data-option{
-    background-color: #ff8383;
-    padding: 10px;
-    margin: 0 0 20px 0;
-    border-radius: 5px;
-}
-
-
 #main_content li{
     display: inline;
     list-style-type: none;
-    background-color: #818181;
+    background-color: #4F4F4F;
     padding: 10px;
     border-radius: 5px 5px 0 0;
-    color: #292A0A;
     font-weight: bold;
     cursor: pointer;
 }
@@ -173,6 +164,8 @@ h1{
     border-radius: 0 5px 5px 5px;
     color: #292A0A;
     border: 1px solid #000;
+    height: 500px;
+    overflow: auto;
 }
 
 #main_content .disabled{
