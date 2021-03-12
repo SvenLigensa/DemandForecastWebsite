@@ -1,15 +1,99 @@
+:root{
+    --grey: #585858;
+    --lightgrey: #C2C2C2E8;
+    --whitegrey:  #EDEDED;
+    --lightbluebackground: #84A9E270;
+    --darkblue: #0088B0;
+}
+
+/* General elements */
 *{
     font-family: 'Roboto', sans-serif;
 }
 body{
     margin: 0;
+    background-color: var(--lightbluebackground);
 }
 h1{
     margin: 0;
+    text-align: center;
+}
+.welcome{
+    background-image: url(../img/brickwall.jpg);
+    background-position: center;
+    background-size: cover;
+    padding: 100px 50px 50px 50px;
+    color: var(--whitegrey);
+    font-size: 20px;
+}
+.basic-section{
+    padding: 50px 30px;
+}
+.form-text{
+    padding: 5px;
+    border-radius: 8px;
+    border: 1px solid var(--grey);
+    margin: 0 5px 0 0;
+}
+.btn{
+    padding: 5px;
+    border-radius: 8px;
+    border: 1px solid var(--grey);
+    margin: 2px 5px 2px 0;
+    background-color: var(--grey);
+    color: var(--whitegrey);
+}
+.stressed-text{
+    color: var(--darkblue);
+}
+.horizontal{
+    display: flex;
+}
+.vertical{
+    flex: 50%;
+    margin: 10px 10px 10px 0;
+}.main-content{
+    background-color: var(--whitegrey);
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    color: #292A0A;
+    border: 1px solid #000;
+    height: 200px;
+    overflow: auto;
+}
+.main-content-modified{
+    background-color: var(--whitegrey);
+    padding: 10px;
+    margin-top: 9px;
+    border-radius: 0 5px 5px 5px;
+    color: #292A0A;
+    border: 1px solid #000;
+    height: 400px;
+    overflow: auto;
+}
+.big-text{
+    font-size: 1.5em;
+}
+.horizontal-container {
+    background-color: var(--whitegrey);
+    display: flex;
+    border-radius: 5px;
+    padding: 3px;
+    margin: 1px 0;
+}
+.border{
+    border: 1px solid #B7B7B7;
+}
+.description-text {
+    margin: auto;
+    margin-left: 10px;
+    float: right;
 }
 
+/* Navigation bar */
 .navbar{
-    background-color: #C2C2C2e8;
+    background-color: var(--lightgrey);
     height: 50px;
     position: fixed;
     top: 0;
@@ -21,53 +105,27 @@ h1{
 .navlist li{
     display: inline-block;
 }
-.navlist li a{
+a{
     color: #000;
     margin: 0 20px;
     text-decoration: none;
 }
-.navlist li a:hover{
-    color: #818181;
+a:hover{
+    color: var(--grey);
     text-decoration: underline;
 }
-.text-center{
-    text-align: center;
-}
-.welcome{
-    background-image: url(../img/brickwall.jpg);
-    background-position: center;
-    background-size: cover;
-    padding: 100px 50px 50px 50px;
-    color: #D0D0D0;
-    font-size: 20px;
-}
-.basic-section{
-    background-color: #84a9e270;
-    padding: 50px 30px;
-}
-.form-text{
-    padding: 5px;
-    border-radius: 8px;
-    border: 1px solid #272d30c7;
-    margin: 0 5px 0 0;
-}
-.btn{
-    padding: 5px;
-    border-radius: 8px;
-    border: 1px solid #585858;
-    margin: 2px 5px 2px 0;
-    background-color: #585858;
-    color: #d0d0d0;
-}
-.special-text{
-    color: #818181;
-}
+
+/* Footer */
 .footer{
-    background-color: #C2C2C2;
     padding: 2px;
     text-align: center;
+    margin: auto;
 }
 
+/* Table */
+.table{
+    padding: 10px 0 10px 0;
+}
 .row{
     display: flex;
 }
@@ -76,44 +134,19 @@ h1{
     width: 100px;
     padding: 2px;
 }
-
-
 .table_heading{
     font-weight: bold;
 }
-.delete-data{
-    background-color: #272d30c7;
-    color: #d0d0d0;
-    border-radius: 4px;
-    border: 1px solid #272d30c7;
-}
 
+/* Graphic */
 .svg{
-    border: 1px solid black;
+    border: 1px solid #000;
     margin: 0 0 0 10px;
 }
 
-.horizontal{
-    display: flex;
-}
-.vertical{
-    flex: 50%;
-    margin: 10px 10px 10px 0;
-}
 
-.table{
-    padding: 10px 0 10px 0;
-}
 
-.big-text{
-    font-size: 20px;
-    margin: 0 1em 0 0;
-}
-
-.info-section{
-    margin: 10px 0 0 0;
-}
-
+/* Cleaning TODO */
 #main_content li{
     display: inline;
     list-style-type: none;
@@ -137,7 +170,7 @@ h1{
 }
 
 #main_content li.selected{
-    background-color: #DCDCDC;
+    background-color: var(--whitegrey);
     border-width: 1px 1px 0 1px;
     border-style: solid;
     border-color: #000;
@@ -146,17 +179,6 @@ h1{
 #main_content .hidden_content{
     display: none;
     visibility: hidden;
-}
-
-#main_content #page-content{
-    background-color: #DCDCDC;
-    padding: 10px;
-    margin-top: 9px;
-    border-radius: 0 5px 5px 5px;
-    color: #292A0A;
-    border: 1px solid #000;
-    height: 500px;
-    overflow: auto;
 }
 
 #main_content .disabled{

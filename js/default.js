@@ -41,9 +41,9 @@ var current_id = "start";
 
 
 // --- --- Functions --- ---
-document.getElementById("input-data").addEventListener("keyup", function (e) { if (e.key == "Enter") { addInputData(); } }, false);
-document.getElementById("set-n").addEventListener("keyup", function (e) { if (e.key == "Enter") { movingAverage(); } }, false);
-document.getElementById("set-alpha").addEventListener("keyup", function(e) { if (e.key == "Enter") { singleExponentialSmoothing(); } }, false);
+document.getElementById("input-data").addEventListener("keyup", function (e) { if (e.key === "Enter") { addInputData(); } }, false);
+document.getElementById("set-n").addEventListener("keyup", function (e) { if (e.key === "Enter") { movingAverage(); } }, false);
+document.getElementById("set-alpha").addEventListener("keyup", function(e) { if (e.key === "Enter") { singleExponentialSmoothing(); } }, false);
 
 /*
 // ### Possible option if multiple elements exist, where the Enter-functionality is needed ###
@@ -137,7 +137,7 @@ function showTab(id) {
     console.log(old_id);
     console.log(current_id);
 
-    if (old_id == current_id) {
+    if (old_id === current_id) {
         current_id = "start";
     }
 
@@ -294,7 +294,7 @@ function drawLines(vector, color) {
 
 // --- Toggles the y axis starting point (min(input_data) or 0) ---
 function toggleYScale() {
-    if (y_start_0 == true) {
+    if (y_start_0 === true) {
         $("#y-axis-description").append("<div id='y-axis-description-min-max'>Y axis scaling from min to max</div>");
         document.getElementById("y-axis-description-0-max").remove();
         y_start_0 = false;
@@ -413,7 +413,7 @@ function setAlpha() {
     if (newAlpha > 0 && newAlpha <= 1) {
         alpha = newAlpha;
         $("#alpha-value").text(alpha);
-        $("#set-alpha").val("0.");
+        $("#set-alpha").val("");
     }
 }
 
