@@ -14,7 +14,6 @@
     <nav class="navbar">
       <ul class="navlist">
         <li><a href="#DemandForecast">Demand Forecast</a></li>
-        <li><a href="#Algorithms">Algorithms</a></li>
       </ul>
     </nav>
     <div class="welcome">
@@ -28,10 +27,10 @@
       <div class="horizontal">
         <div class="vertical">
           <div id="main_content">
-            <li class="disabled selectable selected" id="start">Start</li>
-            <li class="selectable" id="input" onclick="showTab(this.id)">Input</li>
-            <li class="selectable" id="ma" onclick="showTab(this.id)">Moving Average</li>
-            <li class="selectable" id="ses" onclick="showTab(this.id)">Single Exponential Smoothing</li>
+            <li class="disabled selectable selected" short="Start" long="Start" id="start">Start</li>
+            <li class="selectable" id="input" short="Input" long="Input" onclick="showTab(this.id)">Input</li>
+            <li class="selectable" id="ma" short="MA" long="Moving Average" onclick="showTab(this.id)">MA</li>
+            <li class="selectable" id="ses" short="SES" long="Single Exponential Smoothing" onclick="showTab(this.id)">SES</li>
 
             <div id="page-content">
               <div id="start-content-inner">
@@ -130,12 +129,9 @@
       </div>
       <hr>
     </section>
-    <section class="basic-section" id="Algorithms">
-      <h1>Algorithms</h1>
-    </section>
   </main>
   <footer class="footer">
-    <a class="footer-link" href="https://www.google.com" , target="_blank">Link to google.com</a>
+    <p>Website made by Sven Ligensa</p>
   </footer>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://d3js.org/d3.v6.min.js"></script>

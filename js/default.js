@@ -7,11 +7,11 @@
 // Dimensions of the coordinate system graphic
 var width = 500;
 var height = 500;
-var margin = ({ top: 15, right: 15, bottom: 25, left: 25 });
+var margin = ({ top: 15, right: 15, bottom: 25, left: 30 });
 
 // Variables storing the toggle values
 // false: y axis starts at min(input_data)
-// true: y axis starts at 0
+// true: y axis starts at 0 (unless negative y values exist)
 var y_start_0 = false;
 // false: value of forecast includes value of the current period
 // true: value of forecast does not include value of the current period
@@ -134,6 +134,9 @@ function showTab(id) {
     var old_id = current_id;
     current_id = id;
 
+    console.log(old_id);
+    console.log(current_id);
+
     if (old_id == current_id) {
         current_id = "start";
     }
@@ -145,8 +148,13 @@ function showTab(id) {
 
     document.getElementById(old_id + "-content").appendChild(oldChild);
 
-    document.getElementById(old_id).classList.toggle('selected');
-    document.getElementById(current_id).classList.toggle('selected');
+    var oldTab = document.getElementById(old_id);
+    oldTab.classList.toggle('selected');
+    oldTab.innerText = oldTab.getAttribute("short");
+
+    var newTab = document.getElementById(current_id);
+    newTab.classList.toggle('selected');
+    newTab.innerText = newTab.getAttribute("long");
 
     if (current_id != "start") {
         document.getElementById(current_id).className = "selected";
@@ -201,7 +209,7 @@ function deleteOldPlot() {
 function createNewPlot() {
 
     x = d3.scaleLinear().domain([1, input_data.length+1]).range([margin.left, width - margin.right]);
-    y = d3.scaleLinear().domain([y_start_0 ? 0 : d3.min(input_data), d3.max(input_data)]).range([height - margin.bottom, margin.top]);
+    y = d3.scaleLinear().domain([y_start_0 ? d3.min([0, d3.min(input_data)]) : d3.min(input_data), d3.max(input_data)]).range([height - margin.bottom, margin.top]);
     xAxis = g => g
         .attr("transform", 'translate(0,' + (height - margin.bottom) + ')')
         .call(d3.axisBottom(x).tickFormat(function (e) {
@@ -292,7 +300,7 @@ function toggleYScale() {
         y_start_0 = false;
     }
     else {
-        $("#y-axis-description").append("<div id='y-axis-description-0-max'>Y axis scaling from 0 to max</div>");
+        $("#y-axis-description").append("<div id='y-axis-description-0-max'>Y axis scaling from 0 to max (unless negative y values exist)</div>");
         document.getElementById("y-axis-description-min-max").remove();
         y_start_0 = true;
     }
