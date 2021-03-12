@@ -169,6 +169,10 @@ a:hover{
     color: #3ea0fc;
 }
 
+#main_content #des{
+    color: #D6B900;
+}
+
 #main_content li.selected{
     background-color: var(--whitegrey);
     border-width: 1px 1px 0 1px;

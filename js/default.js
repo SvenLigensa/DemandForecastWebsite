@@ -9,6 +9,9 @@ var width = 500;
 var height = 500;
 var margin = ({ top: 15, right: 15, bottom: 25, left: 30 });
 
+// Stores the id of the currently active tab
+var current_id = "start";
+
 // Variables storing the toggle values
 // false: y axis starts at min(input_data)
 // true: y axis starts at 0 (unless negative y values exist)
@@ -18,32 +21,43 @@ var y_start_0 = false;
 var forecast_offset = true;
 
 // Variables storing color information
-var input_data_color = "#00b003";
+var input_data_color = "#00B003";
 var moving_average_color = "#E74C3C";
-var single_exponential_smoothing_color = "#3ea0fc";
+var single_exponential_smoothing_color = "#3EA0FC";
+var double_exponential_smoothing_color = "#D6B900";
 
 // Stores the entered values
 var input_data = [];
 
-// Number of periods (Moving Average)
+// Moving Average
+// Number of periods
 var N = 3;
-// Forecast of moving average
+// Forecast values
 var moving_average = [];
 
-
+// Single Exponential Smoothing
 // Smoothing factor
-var alpha = 0.2;
-// Forecast fo Single Exponential Smoothing
+var ses_alpha = 0.2;
+// Forecast values
 var single_exponential_smoothing = [];
 
-// Stores the id of the currently active tab
-var current_id = "start";
+// Double Exponential Smoothing
+// Data smoothing factor
+var des_alpha = 0.2;
+var des_a_values = [];
+// Trend smoothing factor
+var des_beta = 0.2;
+var des_b_values = [];
+// Forecast values
+var double_exponential_smoothing = [];
 
 
 // --- --- Functions --- ---
 document.getElementById("input-data").addEventListener("keyup", function (e) { if (e.key === "Enter") { addInputData(); } }, false);
 document.getElementById("set-n").addEventListener("keyup", function (e) { if (e.key === "Enter") { movingAverage(); } }, false);
-document.getElementById("set-alpha").addEventListener("keyup", function(e) { if (e.key === "Enter") { singleExponentialSmoothing(); } }, false);
+document.getElementById("set-ses-alpha").addEventListener("keyup", function(e) { if (e.key === "Enter") { singleExponentialSmoothing(); } }, false);
+document.getElementById("set-des-alpha").addEventListener("keyup", function(e) { if (e.key === "Enter") { doubleExponentialSmoothing(); } }, false);
+document.getElementById("set-des-beta").addEventListener("keyup", function(e) { if (e.key === "Enter") { doubleExponentialSmoothing(); } }, false);
 
 /*
 // ### Possible option if multiple elements exist, where the Enter-functionality is needed ###
@@ -134,9 +148,6 @@ function showTab(id) {
     var old_id = current_id;
     current_id = id;
 
-    console.log(old_id);
-    console.log(current_id);
-
     if (old_id === current_id) {
         current_id = "start";
     }
@@ -164,8 +175,9 @@ function showTab(id) {
 function useExampleData(bool) {
     if (bool === true) {
         // Fill input_data with example values
-        input_data = [106.8, 129.2, 153.0, 149.1, 158.3, 132.9, 149.8, 140.3, 138.3, 152.2, 128.1];
+        //input_data = [106.8, 129.2, 153.0, 149.1, 158.3, 132.9, 149.8, 140.3, 138.3, 152.2, 128.1];
         //input_data = [134.5, 106.8, 129.2, 153.0, 149.1, 158.3, 132.9, 149.8, 140.3, 138.3, 152.2, 128.1];
+        input_data = [670.00, 699.40, 700.30, 608.18, 600.55, 626.06, 655.80, 687.99, 718.28, 690.11, 700.00, 726.15, 711.85, 662.13, 762.64, 795.00, 780.90, 779.09, 818.00, 801.26, 812.44, 843.64, 855.12, 869.67, 845.00, 855.00, 877.02, 844.68, 814.29, 830.00];
         displayData(input_data, "input-data-table");
         updatePlot();
     }
@@ -185,6 +197,7 @@ function updatePlot() {
     updateGraph(input_data, input_data_color);
     updateGraph(moving_average, moving_average_color);
     updateGraph(single_exponential_smoothing, single_exponential_smoothing_color);
+    updateGraph(double_exponential_smoothing, double_exponential_smoothing_color);
 }
 
 // --- Updates one graph by ---
@@ -244,17 +257,27 @@ function showLegend() {
     textWrapper.setAttributeNS(null, "fill", moving_average_color);
     textWrapper.setAttributeNS(null, "font-size", "10");
 
-    var textNode = document.createTextNode("Moving Average");
+    var textNode = document.createTextNode("MA");
     textWrapper.appendChild(textNode);
     document.getElementById("svg").appendChild(textWrapper);
 
     var textWrapper = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    textWrapper.setAttributeNS(null, "x", 150);
+    textWrapper.setAttributeNS(null, "x", 100);
     textWrapper.setAttributeNS(null, "y", 10);
     textWrapper.setAttributeNS(null, "fill", single_exponential_smoothing_color);
     textWrapper.setAttributeNS(null, "font-size", "10");
 
-    var textNode = document.createTextNode("Single Exponential Smoothing");
+    var textNode = document.createTextNode("SES");
+    textWrapper.appendChild(textNode);
+    document.getElementById("svg").appendChild(textWrapper);
+
+    var textWrapper = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    textWrapper.setAttributeNS(null, "x", 140);
+    textWrapper.setAttributeNS(null, "y", 10);
+    textWrapper.setAttributeNS(null, "fill", double_exponential_smoothing_color);
+    textWrapper.setAttributeNS(null, "font-size", "10");
+
+    var textNode = document.createTextNode("DES");
     textWrapper.appendChild(textNode);
     document.getElementById("svg").appendChild(textWrapper);
 
@@ -371,7 +394,7 @@ function removeMovingAverage() {
         moving_average.push(NaN);
     }
     deleteTableBodyById("moving-average-table");
-    updateGraph(moving_average, moving_average_color, "Moving Average");
+    updateGraph(moving_average, moving_average_color);
 }
 
 // --- Calculates the moving average of input_data for N periods ---
@@ -401,22 +424,23 @@ function calculateMovingAverage() {
 
 function singleExponentialSmoothing() {
     removeSingleExponentialSmoothing();
-    setAlpha();
+    setSesAlpha();
     calculateSingleExponentialSmoothing();
     displayData(single_exponential_smoothing, "single-exponential-smoothing-table");
     updatePlot();
 }
 
-// --- Set alpha for single exponential smoothing (only for 0 < alpha <= 1) ---
-function setAlpha() {
-    var newAlpha = $("#set-alpha").val();
-    if (newAlpha > 0 && newAlpha <= 1) {
-        alpha = newAlpha;
-        $("#alpha-value").text(alpha);
-        $("#set-alpha").val("");
+// --- Set alpha for single exponential smoothing (only for 0 <= alpha <= 1) ---
+function setSesAlpha() {
+    var newAlpha = $("#set-ses-alpha").val();
+    if (newAlpha !== "" && newAlpha >= 0 && newAlpha <= 1) {
+        ses_alpha = newAlpha;
+        $("#ses-alpha-value").text(ses_alpha);
+        $("#set-ses-alpha").val("");
     }
 }
 
+// --- Calculates the values of the Siingle Exponential Smoothing
 function calculateSingleExponentialSmoothing() {
     // Initialization
     single_exponential_smoothing.push(NaN);
@@ -425,7 +449,7 @@ function calculateSingleExponentialSmoothing() {
     // Computation
     input_data.forEach(function (item, index) {
         if (index > 0){
-            single_exponential_smoothing.push(item*alpha + (1-alpha)*single_exponential_smoothing[index]);
+            single_exponential_smoothing.push(ses_alpha*item + (1-ses_alpha)*single_exponential_smoothing[index]);
         }
     });
 }
@@ -434,5 +458,71 @@ function calculateSingleExponentialSmoothing() {
 function removeSingleExponentialSmoothing() {
     single_exponential_smoothing = [];
     deleteTableBodyById("single-exponential-smoothing-table");
-    updateGraph(single_exponential_smoothing, single_exponential_smoothing_color, "Single Exponential Smoothing");
+    updateGraph(single_exponential_smoothing, single_exponential_smoothing_color);
+}
+
+
+// #---# Double Exponential Smoothing #---#
+
+function doubleExponentialSmoothing() {
+    removeDoubleExponentialSmoothing();
+    setDesAlpha();
+    setDesBeta();
+    calculateDoubleExponentialSmoothing();
+    displayData(double_exponential_smoothing, "double-exponential-smoothing-table");
+    updatePlot();
+}
+
+// --- Set alpha for single exponential smoothing (only for 0 <= alpha <= 1) ---
+function setDesAlpha() {
+    var newAlpha = $("#set-des-alpha").val();
+    if (newAlpha !== "" && newAlpha >= 0 && newAlpha <= 1) {
+        des_alpha = newAlpha;
+        $("#des-alpha-value").text(des_alpha);
+        $("#set-des-alpha").val("");
+    }
+}
+
+function setDesBeta() {
+    var newBeta = $("#set-des-beta").val();
+    if (newBeta !== "" && newBeta >= 0 && newBeta <= 1) {
+        des_beta = newBeta;
+        $("#des-beta-value").text(des_beta);
+        $("#set-des-beta").val("");
+    }
+}
+
+// --- Calculates the values of the Siingle Exponential Smoothing
+function calculateDoubleExponentialSmoothing() {
+
+    //console.log(des_alpha + ", " + des_beta);
+
+
+    // Initialization
+    double_exponential_smoothing.push(NaN);
+    //double_exponential_smoothing.push(NaN);
+
+    des_a_values.push(input_data[0]);
+
+    // TODO: Null-Wert abfangen!
+    des_b_values.push(input_data[1] - input_data[0]);
+
+    // Computation
+    input_data.forEach(function (item, index) {
+        //console.log("a-values: " + des_a_values + ", b-values: " + des_b_values);
+        if (index > 0){
+            des_a_values.push((des_alpha*input_data[index])+(1-des_alpha)*(des_a_values[index-1]+des_b_values[index-1]));
+            des_b_values.push(des_beta*(des_a_values[index]-des_a_values[index-1])+(1-des_beta)*des_b_values[index-1]);
+            double_exponential_smoothing.push(des_a_values[index-1]+des_b_values[index-1]);
+        }
+    });
+}
+
+// --- Deletes everything regarding the single exponential smoothing ---
+function removeDoubleExponentialSmoothing() {
+    double_exponential_smoothing = [];
+    des_a_values = [];
+    des_b_values = [];
+    deleteTableBodyById("double-exponential-smoothing-table");
+    updateGraph(double_exponential_smoothing, double_exponential_smoothing_color);
 }

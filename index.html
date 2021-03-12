@@ -32,6 +32,8 @@
             <li class="selectable" id="ma" short="MA" long="Moving Average" onclick="showTab(this.id)">MA</li>
             <li class="selectable" id="ses" short="SES" long="Single Exponential Smoothing" onclick="showTab(this.id)">
               SES</li>
+            <li class="selectable" id="des" short="DES" long="Double Exponential Smoothing" onclick="showTab(this.id)">
+              DES</li>
 
             <div id="page-content" class="main-content-modified">
               <div id="start-content-inner">
@@ -92,15 +94,17 @@
                 </div>
               </div>
             </div>
+
+            <!-- Content for the Single Exponential Smoothing tab -->
             <div class="hidden_content" id="ses-content">
               <div id="ses-content-inner">
                 <div class="horizontal-container">
                   <div>Alpha value:&nbsp;</div>
-                  <div id="alpha-value">0.2</div>
+                  <div id="ses-alpha-value">0.2</div>
                 </div>
                 <div class="horizontal-container border">
-                  <input class="form-text" type="number" id="set-alpha" placeholder="Alpha value" min="0.1" max="1"
-                    step="0.1">
+                  <input class="form-text" type="number" id="set-ses-alpha" placeholder="Smoothing factor (alpha)"
+                    min="0.1" max="1" step="0.1">
                   <input class="btn" id="calculate-single-exponential-smoothing" type="submit"
                     value="Calculate Single Exponential Smoothing" onclick="singleExponentialSmoothing()">
                 </div>
@@ -111,6 +115,37 @@
                     <div class="cell table_heading">Single Exponential Smoothing</div>
                   </div>
                   <div id="single-exponential-smoothing-table">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Content for the Double Exponential Smoothing tab -->
+            <!-- Interfering alpha values in SES and DES -->
+            <div class="hidden_content" id="des-content">
+              <div id="des-content-inner">
+                <div class="horizontal-container">
+                  <div>Alpha value:&nbsp;</div>
+                  <div id="des-alpha-value">0.2</div>
+                  <div>&nbsp;&nbsp;-&nbsp;&nbsp;</div>
+                  <div>Beta value:&nbsp;</div>
+                  <div id="des-beta-value">0.2</div>
+                </div>
+                <div class="horizontal-container border">
+                  <input class="form-text" type="number" id="set-des-alpha" placeholder="Data smoothing factor (alpha)"
+                    min="0.1" max="1" step="0.1">
+                  <input class="form-text" type="number" id="set-des-beta" placeholder="Trend smoothing factor (beta)"
+                    min="0.1" max="1" step="0.1">
+                  <input class="btn" id="calculate-double-exponential-smoothing" type="submit"
+                    value="Calculate Double Exponential Smoothing" onclick="doubleExponentialSmoothing()">
+                </div>
+                <div id="n-value"></div>
+                <div id="double-exponential-smoothing-table-outer" class="table">
+                  <div class="row" id="double-exponential-smoothing-table-header">
+                    <div class="cell table_heading">Time</div>
+                    <div class="cell table_heading">Double Exponential Smoothing</div>
+                  </div>
+                  <div id="double-exponential-smoothing-table">
                   </div>
                 </div>
               </div>
