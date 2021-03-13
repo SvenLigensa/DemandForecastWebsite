@@ -161,34 +161,6 @@ function showTab(evt, id) {
     document.getElementById(id + "-content").style.display = "block";
     evt.currentTarget.className += " active";
     evt.currentTarget.innerText = evt.currentTarget.getAttribute("long");
-
-    /*
-    var old_id = current_id;
-    current_id = id;
-
-    if (old_id === current_id) {
-        current_id = "start";
-    }
-
-    var oldChild = document.getElementById(old_id + "-content-inner");
-    var newChild = document.getElementById(current_id + "-content-inner");
-
-    document.getElementById("page-content").replaceChild(newChild, oldChild);
-
-    document.getElementById(old_id + "-content").appendChild(oldChild);
-
-    var oldTab = document.getElementById(old_id);
-    oldTab.classList.toggle('selected');
-    oldTab.innerText = oldTab.getAttribute("short");
-
-    var newTab = document.getElementById(current_id);
-    newTab.classList.toggle('selected');
-    newTab.innerText = newTab.getAttribute("long");
-
-    if (current_id != "start") {
-        document.getElementById(current_id).className = "selected";
-    }
-    */
 }
 
 // TODO: Create better example data (maybe randomized?)
@@ -262,8 +234,8 @@ function createNewPlot() {
 
 function showLegend() {
 
-    // TODO: Clean up the code -> shorter?!
-
+    // TODO: Create a good looking legend
+    /*
     var textWrapper = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     textWrapper.setAttributeNS(null, "x", 20);
     textWrapper.setAttributeNS(null, "y", 10);
@@ -273,36 +245,7 @@ function showLegend() {
     var textNode = document.createTextNode("Input");
     textWrapper.appendChild(textNode);
     document.getElementById("svg").appendChild(textWrapper);
-
-    var textWrapper = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    textWrapper.setAttributeNS(null, "x", 60);
-    textWrapper.setAttributeNS(null, "y", 10);
-    textWrapper.setAttributeNS(null, "fill", moving_average_color);
-    textWrapper.setAttributeNS(null, "font-size", "10");
-
-    var textNode = document.createTextNode("MA");
-    textWrapper.appendChild(textNode);
-    document.getElementById("svg").appendChild(textWrapper);
-
-    var textWrapper = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    textWrapper.setAttributeNS(null, "x", 100);
-    textWrapper.setAttributeNS(null, "y", 10);
-    textWrapper.setAttributeNS(null, "fill", single_exponential_smoothing_color);
-    textWrapper.setAttributeNS(null, "font-size", "10");
-
-    var textNode = document.createTextNode("SES");
-    textWrapper.appendChild(textNode);
-    document.getElementById("svg").appendChild(textWrapper);
-
-    var textWrapper = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    textWrapper.setAttributeNS(null, "x", 140);
-    textWrapper.setAttributeNS(null, "y", 10);
-    textWrapper.setAttributeNS(null, "fill", double_exponential_smoothing_color);
-    textWrapper.setAttributeNS(null, "font-size", "10");
-
-    var textNode = document.createTextNode("DES");
-    textWrapper.appendChild(textNode);
-    document.getElementById("svg").appendChild(textWrapper);
+    */
 }
 
 function drawPoints(vector, color) {
