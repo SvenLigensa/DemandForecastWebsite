@@ -26,142 +26,150 @@
       <hr>
       <div class="horizontal">
         <div class="vertical">
-          <div id="main_content">
-            <li class="disabled selectable selected" short="Start" long="Start" id="start">Start</li>
-            <li class="selectable" id="input" short="Input" long="Input" onclick="showTab(this.id)">Input</li>
-            <li class="selectable" id="ma" short="MA" long="Moving Average" onclick="showTab(this.id)">MA</li>
-            <li class="selectable" id="ses" short="SES" long="Single Exponential Smoothing" onclick="showTab(this.id)">
-              SES</li>
-            <li class="selectable" id="des" short="DES" long="Double Exponential Smoothing" onclick="showTab(this.id)">
-              DES</li>
 
-            <div id="page-content" class="main-content-modified">
-              <div id="start-content-inner">
-                Select the tabs to do nice things. Have fun and play around with different parameters.
+          <!-- Tabs to choose what content to see -->
+          <div class="tab">
+            <button class="tablinks" short="Start" long="Start" id="start"
+              onclick="showTab(event, this.id)">Start</button>
+            <button class="tablinks" short="Examples" long="Example Data" id="examples"
+              onclick="showTab(event, this.id)">Examples</button>
+            <button class="tablinks" id="input" short="Input" long="Input"
+              onclick="showTab(event, this.id)">Input</button>
+            <button class="tablinks" id="ma" short="MA" long="Moving Average"
+              onclick="showTab(event, this.id)">MA</button>
+            <button class="tablinks" id="ses" short="SES" long="Single Exponential Smoothing"
+              onclick="showTab(event, this.id)">SES</button>
+            <button class="tablinks" id="des" short="DES" long="Double Exponential Smoothing"
+              onclick="showTab(event, this.id)">DES</button>
+          </div>
+
+          <div class="main-content-tab">
+            <!-- Content for the Start tab -->
+            <div class="tabcontent" id="start-content">
+              Select the tabs to do nice things. Have fun and play around with different parameters.
+            </div>
+
+            <div class="tabcontent" id="examples-content">
+              <div class="horizontal-container border">
+                <input class="btn" id="use-example-data-rising" type="submit" value="Use example data with rising trend"
+                  onclick="useExampleData('rising')">
+              </div>
+              <div class="horizontal-container border">
+                <input class="btn" id="use-example-data-constant" type="submit" value="Use example data without trend"
+                  onclick="useExampleData('constant')">
               </div>
             </div>
-            <div class="hidden_content" id="start-content">
-            </div>
-            <div class="hidden_content" id="input-content">
-              <div id="input-content-inner">
-                <!-- Data input form -->
-                <div class="horizontal-container">
-                  <div>Enter your data here:</div>
+
+            <!-- Content for the Input tab -->
+            <div class="tabcontent" id="input-content">
+              <div class="horizontal-container">
+                <div>Enter your data here:</div>
+              </div>
+              <div class="horizontal-container border">
+                <input class="form-text" type="number" id="input-data" placeholder="Demand in next period">
+                <input class="btn" id="set-input-data" type="submit" value="Add data point" onclick="addInputData()">
+                <input class="btn" id="delete-data" type="submit" value="Delete last data point"
+                  onclick="deleteInputData()">
+              </div>
+              <div id="input-data-table-outer" class="table">
+                <div class="row" id="input-data-table-header">
+                  <div class="cell table_heading">Time</div>
+                  <div class="cell table_heading">Demand</div>
                 </div>
-                <div class="horizontal-container border">
-                  <input class="form-text" type="number" id="input-data" placeholder="Demand in next period">
-                  <input class="btn" id="set-input-data" type="submit" value="Add data point" onclick="addInputData()">
-                  <input class="btn" id="delete-data" type="submit" value="Delete last data point"
-                    onclick="deleteInputData()">
-                  <input class="btn" id="use-example-data" type="submit" value="Use example data"
-                    onclick="useExampleData(true)">
-                </div>
-                <!-- Table displaying the input data -->
-                <div id="input-data-table-outer" class="table">
-                  <div class="row" id="input-data-table-header">
-                    <div class="cell table_heading">Time</div>
-                    <div class="cell table_heading">Demand</div>
-                  </div>
-                  <div id="input-data-table">
-                  </div>
+                <div id="input-data-table">
                 </div>
               </div>
             </div>
-            <div class="hidden_content" id="ma-content">
-              <div id="ma-content-inner">
-                <div class="horizontal-container">
-                  <div>Number of periods:&nbsp;</div>
-                  <div id="n-value">3</div>
+
+            <!-- Content for the Moving Average tab -->
+            <div class="tabcontent" id="ma-content">
+              <div class="horizontal-container">
+                <div>Number of periods:&nbsp;</div>
+                <div id="n-value">3</div>
+              </div>
+              <div class="horizontal-container border">
+                <input class="form-text" type="number" id="set-n" placeholder="Number of periods" min="1">
+                <input class="btn" id="calculate-moving-average" type="submit" value="Calculate Moving Average"
+                  onclick="movingAverage()">
+              </div>
+              <div class="horizontal-container border">
+                <input class="btn" id="toggle-offset" type="submit" value="Toggle Offset" onclick="toggleOffset()">
+                <div class="description-text" id="offset-description">
+                  <div id="offset-true">Moving average in period i does not include value of period i (forecast)</div>
                 </div>
-                <div class="horizontal-container border">
-                  <input class="form-text" type="number" id="set-n" placeholder="Number of periods" min="1">
-                  <input class="btn" id="calculate-moving-average" type="submit" value="Calculate Moving Average"
-                    onclick="movingAverage()">
+              </div>
+              <div id="moving-average-table-outer" class="table">
+                <div class="row" id="moving-average-table-header">
+                  <div class="cell table_heading">Time</div>
+                  <div class="cell table_heading">Moving Average</div>
                 </div>
-                <div class="horizontal-container border">
-                  <input class="btn" id="toggle-offset" type="submit" value="Toggle Offset" onclick="toggleOffset()">
-                  <div class="description-text" id="offset-description">
-                    <div id="offset-true">Moving average in period i does not include value of period i (forecast)</div>
-                  </div>
-                </div>
-                <div id="moving-average-table-outer" class="table">
-                  <div class="row" id="moving-average-table-header">
-                    <div class="cell table_heading">Time</div>
-                    <div class="cell table_heading">Moving Average</div>
-                  </div>
-                  <div id="moving-average-table">
-                  </div>
+                <div id="moving-average-table">
                 </div>
               </div>
             </div>
 
             <!-- Content for the Single Exponential Smoothing tab -->
-            <div class="hidden_content" id="ses-content">
-              <div id="ses-content-inner">
-                <div class="horizontal-container">
-                  <div>Alpha value:&nbsp;</div>
-                  <div id="ses-alpha-value">0.2</div>
+            <div class="tabcontent" id="ses-content">
+              <div class="horizontal-container">
+                <div>Alpha value:&nbsp;</div>
+                <div id="ses-alpha-value">0.2</div>
+              </div>
+              <div class="horizontal-container border">
+                <input class="form-text" type="number" id="set-ses-alpha" placeholder="Smoothing factor (alpha)"
+                  min="0.1" max="1" step="0.1">
+                <input class="btn" id="calculate-single-exponential-smoothing" type="submit"
+                  value="Calculate Single Exponential Smoothing" onclick="singleExponentialSmoothing()">
+              </div>
+              <div id="n-value"></div>
+              <div id="single-exponential-smoothing-table-outer" class="table">
+                <div class="row" id="single-exponential-smoothing-table-header">
+                  <div class="cell table_heading">Time</div>
+                  <div class="cell table_heading">Single Exponential Smoothing</div>
                 </div>
-                <div class="horizontal-container border">
-                  <input class="form-text" type="number" id="set-ses-alpha" placeholder="Smoothing factor (alpha)"
-                    min="0.1" max="1" step="0.1">
-                  <input class="btn" id="calculate-single-exponential-smoothing" type="submit"
-                    value="Calculate Single Exponential Smoothing" onclick="singleExponentialSmoothing()">
-                </div>
-                <div id="n-value"></div>
-                <div id="single-exponential-smoothing-table-outer" class="table">
-                  <div class="row" id="single-exponential-smoothing-table-header">
-                    <div class="cell table_heading">Time</div>
-                    <div class="cell table_heading">Single Exponential Smoothing</div>
-                  </div>
-                  <div id="single-exponential-smoothing-table">
-                  </div>
+                <div id="single-exponential-smoothing-table">
                 </div>
               </div>
             </div>
 
             <!-- Content for the Double Exponential Smoothing tab -->
             <!-- Interfering alpha values in SES and DES -->
-            <div class="hidden_content" id="des-content">
-              <div id="des-content-inner">
-                <div class="horizontal-container">
-                  <div>Alpha value:&nbsp;</div>
-                  <div id="des-alpha-value">0.2</div>
-                  <div>&nbsp;&nbsp;-&nbsp;&nbsp;</div>
-                  <div>Beta value:&nbsp;</div>
-                  <div id="des-beta-value">0.2</div>
-                </div>
-                <div class="horizontal-container border">
-                  <input class="form-text" type="number" id="set-des-alpha" placeholder="Data smoothing factor (alpha)"
-                    min="0.1" max="1" step="0.1">
-                  <input class="form-text" type="number" id="set-des-beta" placeholder="Trend smoothing factor (beta)"
-                    min="0.1" max="1" step="0.1">
-                  <input class="btn" id="calculate-double-exponential-smoothing" type="submit"
-                    value="Calculate Double Exponential Smoothing" onclick="doubleExponentialSmoothing()">
-                </div>
-                <div id="n-value"></div>
-                <div id="double-exponential-smoothing-table-outer" class="table">
-                  <div class="row" id="double-exponential-smoothing-table-header">
-                    <div class="cell table_heading">Time</div>
-                    <div class="cell table_heading">Double Exponential Smoothing</div>
-                  </div>
-                  <div id="double-exponential-smoothing-table">
-                  </div>
-                </div>
+            <div class="tabcontent" id="des-content">
+              <div class="horizontal-container">
+                <div>Alpha value:&nbsp;</div>
+                <div id="des-alpha-value">0.2</div>
+                <div>&nbsp;&nbsp;-&nbsp;&nbsp;</div>
+                <div>Beta value:&nbsp;</div>
+                <div id="des-beta-value">0.2</div>
               </div>
-            </div>
-
-            <div class="main-content">
-              <div class="big-text">Settings</div>
               <div class="horizontal-container border">
-                <input class="btn" id="toggle-y-scale" type="submit" value="Toggle Y-Axis" onclick="toggleYScale()">
-                <div class="description-text" id="y-axis-description">
-                  <div id="y-axis-description-min-max">Y axis scaling from min to max</div>
+                <input class="form-text" type="number" id="set-des-alpha" placeholder="Data smoothing factor (alpha)"
+                  min="0.1" max="1" step="0.1">
+                <input class="form-text" type="number" id="set-des-beta" placeholder="Trend smoothing factor (beta)"
+                  min="0.1" max="1" step="0.1">
+                <input class="btn" id="calculate-double-exponential-smoothing" type="submit"
+                  value="Calculate Double Exponential Smoothing" onclick="doubleExponentialSmoothing()">
+              </div>
+              <div id="n-value"></div>
+              <div id="double-exponential-smoothing-table-outer" class="table">
+                <div class="row" id="double-exponential-smoothing-table-header">
+                  <div class="cell table_heading">Time</div>
+                  <div class="cell table_heading">Double Exponential Smoothing</div>
                 </div>
-                <br>
+                <div id="double-exponential-smoothing-table">
+                </div>
               </div>
             </div>
+          </div>
 
+          <div class="main-content-settings">
+            <div class="big-text">Settings</div>
+            <div class="horizontal-container border">
+              <input class="btn" id="toggle-y-scale" type="submit" value="Toggle Y-Axis" onclick="toggleYScale()">
+              <div class="description-text" id="y-axis-description">
+                <div id="y-axis-description-min-max">Y axis scaling from min to max</div>
+              </div>
+              <br>
+            </div>
           </div>
         </div>
         <hr>

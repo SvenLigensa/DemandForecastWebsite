@@ -9,9 +9,6 @@ var width = 500;
 var height = 500;
 var margin = ({ top: 15, right: 15, bottom: 25, left: 30 });
 
-// Stores the id of the currently active tab
-var current_id = "start";
-
 // Variables storing the toggle values
 // false: y axis starts at min(input_data)
 // true: y axis starts at 0 (unless negative y values exist)
@@ -55,9 +52,9 @@ var double_exponential_smoothing = [];
 // --- --- Functions --- ---
 document.getElementById("input-data").addEventListener("keyup", function (e) { if (e.key === "Enter") { addInputData(); } }, false);
 document.getElementById("set-n").addEventListener("keyup", function (e) { if (e.key === "Enter") { movingAverage(); } }, false);
-document.getElementById("set-ses-alpha").addEventListener("keyup", function(e) { if (e.key === "Enter") { singleExponentialSmoothing(); } }, false);
-document.getElementById("set-des-alpha").addEventListener("keyup", function(e) { if (e.key === "Enter") { doubleExponentialSmoothing(); } }, false);
-document.getElementById("set-des-beta").addEventListener("keyup", function(e) { if (e.key === "Enter") { doubleExponentialSmoothing(); } }, false);
+document.getElementById("set-ses-alpha").addEventListener("keyup", function (e) { if (e.key === "Enter") { singleExponentialSmoothing(); } }, false);
+document.getElementById("set-des-alpha").addEventListener("keyup", function (e) { if (e.key === "Enter") { doubleExponentialSmoothing(); } }, false);
+document.getElementById("set-des-beta").addEventListener("keyup", function (e) { if (e.key === "Enter") { doubleExponentialSmoothing(); } }, false);
 
 /*
 // ### Possible option if multiple elements exist, where the Enter-functionality is needed ###
@@ -79,11 +76,13 @@ function pressEnter(element) {
 function initialize() {
     // Initialize the plot
     updatePlot();
+    document.getElementById("start").click();
 }
 
 function removeCalculations() {
     removeMovingAverage();
     removeSingleExponentialSmoothing();
+    removeDoubleExponentialSmoothing();
 }
 
 // --- Adds new value to input_data, displays it in the table, removes all calculations and updates the plot ---
@@ -95,16 +94,12 @@ function addInputData() {
         // Add the value to the array
         input_data.push(Number(newValue));
 
-        // Don't use example data -> remove button
-        useExampleData(false);
-
         // Show the new data in the input-data-table
         addRow(input_data[input_data.length - 1], input_data.length - 1, "input-data-table");
 
         // Clear all calculations as they are not up to date anymore
         // TODO: Alternative: continue calculations when already started
         removeCalculations();
-
         updatePlot();
     }
     // Clear the input field
@@ -144,7 +139,28 @@ function toggleOffset() {
 }
 
 // --- Manage what tab to show (TODO: make function prettier) ---
-function showTab(id) {
+function showTab(evt, id) {
+
+    // Declare all variables
+    var i, tabcontent, tablinks;
+
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+
+    // Get all elements with class="tablinks" and remove the class "active"
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+
+    // Show the current tab, and add an "active" class to the button that opened the tab
+    document.getElementById(id + "-content").style.display = "block";
+    evt.currentTarget.className += " active";
+
+    /*
     var old_id = current_id;
     current_id = id;
 
@@ -170,20 +186,22 @@ function showTab(id) {
     if (current_id != "start") {
         document.getElementById(current_id).className = "selected";
     }
+    */
 }
 
-function useExampleData(bool) {
-    if (bool === true) {
-        // Fill input_data with example values
-        //input_data = [106.8, 129.2, 153.0, 149.1, 158.3, 132.9, 149.8, 140.3, 138.3, 152.2, 128.1];
-        //input_data = [134.5, 106.8, 129.2, 153.0, 149.1, 158.3, 132.9, 149.8, 140.3, 138.3, 152.2, 128.1];
-        input_data = [670.00, 699.40, 700.30, 608.18, 600.55, 626.06, 655.80, 687.99, 718.28, 690.11, 700.00, 726.15, 711.85, 662.13, 762.64, 795.00, 780.90, 779.09, 818.00, 801.26, 812.44, 843.64, 855.12, 869.67, 845.00, 855.00, 877.02, 844.68, 814.29, 830.00];
+// TODO: Create better example data (maybe randomized?)
+function useExampleData(type) {
+    if (type.length > 0) {
+        removeCalculations();
+        updatePlot();
+        if (type === "constant") {
+            input_data = [106.8, 129.2, 153.0, 149.1, 158.3, 132.9, 149.8, 140.3, 138.3, 152.2, 128.1, 140.5, 147.0, 132.3, 134.0, 127.9, 145.3];
+        }
+        else if (type === "rising") {
+            input_data = [670.00, 699.40, 700.30, 608.18, 600.55, 626.06, 655.80, 687.99, 718.28, 690.11, 700.00, 726.15, 711.85, 662.13, 762.64, 795.00, 780.90, 779.09, 818.00, 801.26, 812.44, 843.64, 855.12, 869.67, 845.00, 855.00, 877.02, 844.68, 814.29, 830.00];
+        }
         displayData(input_data, "input-data-table");
         updatePlot();
-    }
-    var exampleDataBtn = document.getElementById("use-example-data");
-    if (exampleDataBtn !== null){
-        exampleDataBtn.remove();
     }
 }
 
@@ -221,8 +239,11 @@ function deleteOldPlot() {
 
 function createNewPlot() {
 
-    x = d3.scaleLinear().domain([1, input_data.length+1]).range([margin.left, width - margin.right]);
-    y = d3.scaleLinear().domain([y_start_0 ? d3.min([0, d3.min(input_data)]) : d3.min(input_data), d3.max(input_data)]).range([height - margin.bottom, margin.top]);
+    var max_y = d3.max([d3.max(input_data), d3.max(moving_average), d3.max(single_exponential_smoothing), d3.max(double_exponential_smoothing)]);
+    var min_y = d3.min([d3.min(input_data), d3.min(moving_average), d3.min(single_exponential_smoothing), d3.min(double_exponential_smoothing)])
+
+    x = d3.scaleLinear().domain([1, input_data.length + 1]).range([margin.left, width - margin.right]);
+    y = d3.scaleLinear().domain([y_start_0 ? d3.min([0, min_y]) : min_y, max_y]).range([height - margin.bottom, margin.top]);
     xAxis = g => g
         .attr("transform", 'translate(0,' + (height - margin.bottom) + ')')
         .call(d3.axisBottom(x).tickFormat(function (e) {
@@ -239,7 +260,7 @@ function createNewPlot() {
 
 function showLegend() {
 
-    // TODO: Clean up the code
+    // TODO: Clean up the code -> shorter?!
 
     var textWrapper = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     textWrapper.setAttributeNS(null, "x", 20);
@@ -280,7 +301,6 @@ function showLegend() {
     var textNode = document.createTextNode("DES");
     textWrapper.appendChild(textNode);
     document.getElementById("svg").appendChild(textWrapper);
-
 }
 
 function drawPoints(vector, color) {
@@ -448,8 +468,8 @@ function calculateSingleExponentialSmoothing() {
 
     // Computation
     input_data.forEach(function (item, index) {
-        if (index > 0){
-            single_exponential_smoothing.push(ses_alpha*item + (1-ses_alpha)*single_exponential_smoothing[index]);
+        if (index > 0) {
+            single_exponential_smoothing.push(ses_alpha * item + (1 - ses_alpha) * single_exponential_smoothing[index]);
         }
     });
 }
@@ -500,7 +520,6 @@ function calculateDoubleExponentialSmoothing() {
 
     // Initialization
     double_exponential_smoothing.push(NaN);
-    //double_exponential_smoothing.push(NaN);
 
     des_a_values.push(input_data[0]);
 
@@ -510,10 +529,10 @@ function calculateDoubleExponentialSmoothing() {
     // Computation
     input_data.forEach(function (item, index) {
         //console.log("a-values: " + des_a_values + ", b-values: " + des_b_values);
-        if (index > 0){
-            des_a_values.push((des_alpha*input_data[index])+(1-des_alpha)*(des_a_values[index-1]+des_b_values[index-1]));
-            des_b_values.push(des_beta*(des_a_values[index]-des_a_values[index-1])+(1-des_beta)*des_b_values[index-1]);
-            double_exponential_smoothing.push(des_a_values[index-1]+des_b_values[index-1]);
+        if (index > 0) {
+            des_a_values.push((des_alpha * input_data[index]) + (1 - des_alpha) * (des_a_values[index - 1] + des_b_values[index - 1]));
+            des_b_values.push(des_beta * (des_a_values[index] - des_a_values[index - 1]) + (1 - des_beta) * des_b_values[index - 1]);
+            double_exponential_smoothing.push(des_a_values[index - 1] + des_b_values[index - 1]);
         }
     });
 }

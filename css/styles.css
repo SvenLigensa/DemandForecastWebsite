@@ -1,9 +1,15 @@
 :root{
     --grey: #585858;
+    --tabgrey: #AAAAAA;
     --lightgrey: #C2C2C2E8;
     --whitegrey:  #EDEDED;
     --lightbluebackground: #84A9E270;
     --darkblue: #0088B0;
+    --examplesColor: #B666F4;
+    --inputDataColor: #00B003;
+    --movingAverageColor: #E74C3C;
+    --singleExponentialSmoothingColor: #3EA0FC;
+    --doubleExponentialSmoothingColor: #D6B900;
 }
 
 /* General elements */
@@ -52,26 +58,30 @@ h1{
 .vertical{
     flex: 50%;
     margin: 10px 10px 10px 0;
-}.main-content{
+}
+
+/* TODO clean up */
+.main-content-settings{
     background-color: var(--whitegrey);
     padding: 10px;
     margin-top: 5px;
-    border-radius: 5px;
     color: #292A0A;
     border: 1px solid #000;
     height: 200px;
     overflow: auto;
 }
-.main-content-modified{
+.main-content-tab{
     background-color: var(--whitegrey);
     padding: 10px;
-    margin-top: 9px;
-    border-radius: 0 5px 5px 5px;
+    margin-top: 0px;
     color: #292A0A;
     border: 1px solid #000;
+    border-top: none;
     height: 400px;
     overflow: auto;
 }
+/* */
+
 .big-text{
     font-size: 1.5em;
 }
@@ -144,10 +154,8 @@ a:hover{
     margin: 0 0 0 10px;
 }
 
-
-
-/* Cleaning TODO */
-#main_content li{
+/* Tabs */
+.tablinks{
     display: inline;
     list-style-type: none;
     background-color: #4F4F4F;
@@ -157,35 +165,42 @@ a:hover{
     cursor: pointer;
 }
 
-#main_content #input{
-    color: #00b003;
+#examples{ color: var(--examplesColor); }
+#input{ color: var(--inputDataColor); }
+#ma{ color: var(--movingAverageColor); }
+#ses{ color: var(--singleExponentialSmoothingColor); }
+#des{ color: var(--doubleExponentialSmoothingColor); }
+
+.tab {
+    overflow: hidden;
+    border: 1px solid #000;
+    background-color: var(--tabgrey);
 }
 
-#main_content #ma{
-    color: #E74C3C;
+.tab button {
+    background-color: var(--grey);
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.4s;
+    border-radius: 0;
 }
 
-#main_content #ses{
-    color: #3ea0fc;
+.tab button:hover {
+    background-color: #999999;
 }
 
-#main_content #des{
-    color: #D6B900;
+.tab button.active {
+    background-color: var(--tabgrey);
 }
 
-#main_content li.selected{
-    background-color: var(--whitegrey);
-    border-width: 1px 1px 0 1px;
-    border-style: solid;
-    border-color: #000;
-}
-
-#main_content .hidden_content{
+.tabcontent{
     display: none;
-    visibility: hidden;
 }
 
-#main_content .disabled{
+.disabled{
     display: none;
     visibility: hidden;
 }
