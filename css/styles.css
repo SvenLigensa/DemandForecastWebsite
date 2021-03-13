@@ -4,7 +4,7 @@
     --lightgrey: #C2C2C2E8;
     --whitegrey:  #EDEDED;
     --lightbluebackground: #84A9E270;
-    --darkblue: #0088B0;
+    --stressed: #FF1B5A;
     --examplesColor: #B666F4;
     --inputDataColor: #00B003;
     --movingAverageColor: #E74C3C;
@@ -50,7 +50,7 @@ h1{
     color: var(--whitegrey);
 }
 .stressed-text{
-    color: var(--darkblue);
+    color: var(--stressed);
 }
 .horizontal{
     display: flex;
