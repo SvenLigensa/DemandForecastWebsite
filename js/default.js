@@ -154,11 +154,13 @@ function showTab(evt, id) {
     tablinks = document.getElementsByClassName("tablinks");
     for (i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
+        tablinks[i].innerText = tablinks[i].getAttribute("short");
     }
 
     // Show the current tab, and add an "active" class to the button that opened the tab
     document.getElementById(id + "-content").style.display = "block";
     evt.currentTarget.className += " active";
+    evt.currentTarget.innerText = evt.currentTarget.getAttribute("long");
 
     /*
     var old_id = current_id;
