@@ -24,18 +24,21 @@ var single_exponential_smoothing_color = "#3EA0FC";
 var double_exponential_smoothing_color = "#D6B900";
 
 // Stores the entered values
+var input_time = [];
 var input_data = [];
 
 // Moving Average
 // Number of periods
 var N = 3;
 // Forecast values
+var moving_average_time = []
 var moving_average = [];
 
 // Single Exponential Smoothing
 // Smoothing factor
 var ses_alpha = 0.2;
 // Forecast values
+var single_exponential_smoothing_time = []
 var single_exponential_smoothing = [];
 
 // Double Exponential Smoothing
@@ -46,6 +49,7 @@ var des_a_values = [];
 var des_beta = 0.2;
 var des_b_values = [];
 // Forecast values
+var double_exponential_smoothing_time = [];
 var double_exponential_smoothing = [];
 
 
@@ -79,12 +83,19 @@ function addInputData() {
     if (newValue.length > 0) {
         // Add the value to the array
         input_data.push(Number(newValue));
+        input_time.push(input_time.length + 1);
 
+        // If it is the first entry, create the table from scratch
+        if (input_data.length === 1){
+            addColumn("Time", input_time, "input-data-table");
+            addColumn("Demand", input_data, "input-data-table");
+        }
         // Show the new data in the input-data-table
-        addRow(input_data[input_data.length - 1], input_data.length - 1, "input-data-table");
-
+        else {
+            addRowTwoValues(input_time[input_time.length - 1], input_data[input_data.length - 1], "input-data-table");
+        }
+        
         // Clear all calculations as they are not up to date anymore
-        // TODO: Alternative: continue calculations when already started
         removeCalculations();
         updatePlot();
     }
@@ -92,10 +103,11 @@ function addInputData() {
     $("#input-data").val("");
 }
 
-// --- Delete last input_data entry ---
+// --- Deletes last input_data entry ---
 function deleteInputData() {
-    deleteRow((input_data.length - 1), "input-data-table");
     input_data.pop();
+    input_time.pop();
+    removeLastRow("input-data-table");
     removeCalculations();
     updatePlot();
 }
@@ -118,8 +130,8 @@ function toggleOffset() {
         forecast_offset = true;
     }
     // Update the moving-average-table
-    deleteTableBodyById("moving-average-table");
-    displayData(moving_average, "moving-average-table");
+    removeTable("moving-average-table");
+    addColumn("Moving Average", moving_average, "moving-average-table");
     // Update the plot to show the shifted graph
     updatePlot();
 }
@@ -153,7 +165,7 @@ function showTab(evt, id) {
 function useExampleData(type) {
     if (type.length > 0) {
         removeCalculations();
-        updatePlot();
+        removeTables();
         switch (type) {
             case "constant":
                 input_data = createConstantExample();
@@ -167,19 +179,20 @@ function useExampleData(type) {
             case "highvariation":
                 input_data = createHighVariationExample();
         }
-        displayData(input_data, "input-data-table");
+        input_time = Array.from({ length: input_data.length }, (_, i) => i + 1);
+        addColumn("Time", input_time, "input-data-table");
+        addColumn("Demand", input_data, "input-data-table");
         updatePlot();
     }
 }
 
 function createConstantExample() {
     var base_number = Math.floor(Math.random() * 100000) / 100;
-    var offset_number = Math.floor(base_number*0.05);
+    var offset_number = Math.floor(base_number * 0.05);
     var constant_data = [base_number];
-    for (var i = 1; i < 50; i++){
-        constant_data[i] = Math.round((base_number + Math.random() * offset_number * (1 - 2 * Math.round(Math.random())))*100)/100;
+    for (var i = 1; i < 50; i++) {
+        constant_data[i] = Math.round((base_number + Math.random() * offset_number * (1 - 2 * Math.round(Math.random()))) * 100) / 100;
     }
-    console.log(constant_data);
     return constant_data;
 }
 
@@ -188,7 +201,7 @@ function createRisingExample() {
     var offset_number = Math.floor(base_number / Math.random(Math.floor(base_number)));
     var rising_data = [base_number];
     for (var i = 1; i < 50; i++) {
-        rising_data[i] = Math.round((rising_data[i - 1] + Math.random(offset_number))*100)/100;
+        rising_data[i] = Math.round((rising_data[i - 1] + Math.random(offset_number)) * 100) / 100;
     }
     return rising_data;
 }
@@ -198,17 +211,17 @@ function createFallingExample() {
     var offset_number = Math.floor(base_number / Math.random(Math.floor(base_number)));
     var falling_data = [base_number];
     for (var i = 1; i < 50; i++) {
-        falling_data[i] = Math.round((falling_data[i - 1] - Math.random(offset_number))*100)/100;
+        falling_data[i] = Math.round((falling_data[i - 1] - Math.random(offset_number)) * 100) / 100;
     }
     return falling_data;
 }
 
 function createHighVariationExample() {
     var base_number = Math.floor(Math.random() * 100000) / 100;
-    var offset_number = Math.floor(base_number*0.5);
+    var offset_number = Math.floor(base_number * 0.5);
     var high_variation_data = [base_number];
-    for (var i = 1; i < 50; i++){
-        high_variation_data[i] = Math.round((base_number + Math.random() * offset_number * (1 - 2 * Math.round(Math.random())))*100)/100;
+    for (var i = 1; i < 50; i++) {
+        high_variation_data[i] = Math.round((base_number + Math.random() * offset_number * (1 - 2 * Math.round(Math.random()))) * 100) / 100;
     }
     return high_variation_data;
 }
@@ -269,17 +282,7 @@ function createNewPlot() {
 function showLegend() {
 
     // TODO: Create a good looking legend
-    /*
-    var textWrapper = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    textWrapper.setAttributeNS(null, "x", 20);
-    textWrapper.setAttributeNS(null, "y", 10);
-    textWrapper.setAttributeNS(null, "fill", input_data_color);
-    textWrapper.setAttributeNS(null, "font-size", "10");
 
-    var textNode = document.createTextNode("Input");
-    textWrapper.appendChild(textNode);
-    document.getElementById("svg").appendChild(textWrapper);
-    */
 }
 
 function drawPoints(vector, color) {
@@ -329,39 +332,101 @@ function toggleYScale() {
     updatePlot();
 }
 
-// #---# Table functions #---#
+// #---# Table operations #---#
 
-// --- Displays the given vector in the given table ---
-function displayData(vector, table) {
-    vector.forEach(function (item, index) {
-        addRow(item, index, table);
+// Removes the last row of the given table
+function removeLastRow(table_id) {
+    var table = document.getElementById(table_id);
+    if (table.childElementCount > 0) {
+        table.lastChild.remove();
+    }
+}
+
+// Removes the whole body of the given table
+function removeTable(table_id) {
+    var table = document.getElementById(table_id);
+    var table_head = document.getElementById(table_id + "-header");
+    var table_headers = Array.from(table_head.children);
+    table_headers.forEach(function (item, index){
+        item.remove();
+    });
+    var table_rows = Array.from(table.children);
+    table_rows.forEach(function (item, index) {
+        item.remove();
     });
 }
 
-// --- Adds one row to an existing table (id's starting with 1) ---
-function addRow(value, index, table) {
-    if (!isNaN(value)) {
-        $("#" + table).append("<div class='row' id= '" + table + "-row-" + (index + 1) + "'> <div class='cell'>" + (index + 1) + "</div> <div class='cell'>" + d3.format(".2f")(value) + "</div> </div>");
+// Adds a column to an existing table (vector has to have the same length!!!!)
+function addColumn(title, vector, table_id) {
+    var table_header = document.getElementById(table_id + "-header");
+    table_header.appendChild(createHeaderCell(title));
+    var table = document.getElementById(table_id);
+    var table_rows = Array.from(table.children);
+    // If columns already exist, append the new column
+    if (table_rows.length > 0){
+        table_rows.forEach(function (item, index) {
+            item.appendChild(createCell(vector[index]));
+        });
+    }
+    // Otherwise also create new rows
+    else {
+        vector.forEach(function (item, index) {
+            addRowOneValue(item, table_id);
+        })
     }
 }
 
-// --- Deletes all children of the element with the id ---
-function deleteTableBodyById(id) {
-    const myNode = document.getElementById(id);
-    // Only continue, when myNode exists
-    if (myNode !== null) {
-        while (myNode.lastElementChild) {
-            myNode.removeChild(myNode.lastElementChild);
-        }
-    }
+// Returns a new row-element
+function createNewRow() {
+    var new_row = document.createElement("tr");
+    return new_row;
 }
 
-// --- Deletes row with specific index (id's starting with 1) ---
-function deleteRow(index, table) {
-    var del_row = document.getElementById(table + "-row-" + (index + 1));
-    if (del_row != null) {
-        del_row.remove();
-    }
+// Returns a table-head-element containing the given text
+function createHeaderCell(text) {
+    var text_node = document.createTextNode(text);
+    var value_element = document.createElement("th");
+    value_element.appendChild(text_node);
+    return value_element;
+}
+
+// Returns a table-data-element containing the given value
+function createCell(value) {
+    var text_node = document.createTextNode(d3.format(".2f")(value));
+    var value_element = document.createElement("td");
+    value_element.appendChild(text_node);
+    return value_element;
+}
+
+// Adds a row with two values to the given table
+function addRowTwoValues(value1, value2, table_id) {
+    var table_node = document.getElementById(table_id);
+    var new_row = createNewRow();
+    var cell1 = createCell(value1);
+    var cell2 = createCell(value2);
+    new_row.append(cell1);
+    new_row.append(cell2);
+    table_node.append(new_row);
+}
+
+// Adds a row with one value to the given table
+function addRowOneValue(value, table_id) {
+    var table_node = document.getElementById(table_id);
+    var new_row = createNewRow();
+    var cell = createCell(value);
+    new_row.append(cell);
+    table_node.append(new_row);
+}
+
+function removeTables(){
+    removeTable("input-data-table");
+    removeTable("moving-average-table")
+    removeTable("single-exponential-smoothing-table");
+    removeTable("double-exponential-smoothing-table");
+}
+
+function deleteLastColumn(table_id){
+    return table_id;
 }
 
 // #---# Moving Average #---#
@@ -382,7 +447,8 @@ function movingAverage() {
     removeMovingAverage();
     setN();
     calculateMovingAverage();
-    displayData(moving_average, "moving-average-table");
+    addColumn("Time", moving_average_time, "moving-average-table");
+    addColumn("Moving Average", moving_average, "moving-average-table");
     updatePlot();
 }
 
@@ -392,7 +458,7 @@ function removeMovingAverage() {
     if (forecast_offset === true) {
         moving_average.push(NaN);
     }
-    deleteTableBodyById("moving-average-table");
+    removeTable("moving-average-table");
     updateGraph(moving_average, moving_average_color);
 }
 
@@ -402,6 +468,7 @@ function calculateMovingAverage() {
     var i = 0;
     var sum = 0;
     var means = new Float64Array(input_data.length).fill(NaN);
+
 
     for (var n = Math.min(N - 1, input_data.length); i < n; ++i) {
         sum += input_data[i];
@@ -417,6 +484,8 @@ function calculateMovingAverage() {
         // If forecast_offset is true the index is incremented by 1
         moving_average[index + forecast_offset] = Number(means[index]);
     });
+
+    moving_average_time = Array.from({ length: moving_average.length }, (_, i) => i + 1);
 }
 
 // #---# Single Exponential Smoothing #---#
@@ -425,7 +494,8 @@ function singleExponentialSmoothing() {
     removeSingleExponentialSmoothing();
     setSesAlpha();
     calculateSingleExponentialSmoothing();
-    displayData(single_exponential_smoothing, "single-exponential-smoothing-table");
+    addColumn("Time", single_exponential_smoothing_time, "single-exponential-smoothing-table");
+    addColumn("Single Exponential Smoothing", single_exponential_smoothing, "single-exponential-smoothing-table");
     updatePlot();
 }
 
@@ -451,12 +521,14 @@ function calculateSingleExponentialSmoothing() {
             single_exponential_smoothing.push(ses_alpha * item + (1 - ses_alpha) * single_exponential_smoothing[index]);
         }
     });
+
+    single_exponential_smoothing_time = Array.from({ length: single_exponential_smoothing.length }, (_, i) => i + 1);
 }
 
 // --- Deletes everything regarding the single exponential smoothing ---
 function removeSingleExponentialSmoothing() {
     single_exponential_smoothing = [];
-    deleteTableBodyById("single-exponential-smoothing-table");
+    removeTable("single-exponential-smoothing-table");
     updateGraph(single_exponential_smoothing, single_exponential_smoothing_color);
 }
 
@@ -468,7 +540,10 @@ function doubleExponentialSmoothing() {
     setDesAlpha();
     setDesBeta();
     calculateDoubleExponentialSmoothing();
-    displayData(double_exponential_smoothing, "double-exponential-smoothing-table");
+    addColumn("Time", double_exponential_smoothing_time, "double-exponential-smoothing-table");
+    addColumn("a-Werte", des_a_values, "double-exponential-smoothing-table");
+    addColumn("b-Werte", des_b_values, "double-exponential-smoothing-table");
+    addColumn("Double Exponential Smoothing", double_exponential_smoothing, "double-exponential-smoothing-table");
     updatePlot();
 }
 
@@ -509,6 +584,8 @@ function calculateDoubleExponentialSmoothing() {
             double_exponential_smoothing.push(des_a_values[index - 1] + des_b_values[index - 1]);
         }
     });
+
+    double_exponential_smoothing_time = Array.from({ length: double_exponential_smoothing.length }, (_, i) => i + 1);
 }
 
 // --- Deletes everything regarding the single exponential smoothing ---
@@ -516,6 +593,6 @@ function removeDoubleExponentialSmoothing() {
     double_exponential_smoothing = [];
     des_a_values = [];
     des_b_values = [];
-    deleteTableBodyById("double-exponential-smoothing-table");
+    removeTable("double-exponential-smoothing-table");
     updateGraph(double_exponential_smoothing, double_exponential_smoothing_color);
 }

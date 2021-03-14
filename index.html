@@ -26,7 +26,6 @@
       <hr>
       <div class="horizontal">
         <div class="vertical">
-
           <!-- Tabs to choose what content to see -->
           <!-- https://www.w3schools.com/howto/howto_js_tabs.asp -->
           <div class="tab">
@@ -43,9 +42,8 @@
             <button class="tablinks" id="des" short="DES" long="Double Exponential Smoothing"
               onclick="showTab(event, this.id)">DES</button>
           </div>
-
+          <!-- Container holding all the tabs -->
           <div class="main-content-tab">
-
             <!-- Content for the Start tab -->
             <div class="tabcontent" id="start-content">
               <div class="big-text">Why Demand Forecast?</div>
@@ -58,7 +56,6 @@
                 the predictions represent the data.
               </div>
             </div>
-
             <!-- Content for the Example Data tab -->
             <div class="tabcontent" id="examples-content">
               <div class="horizontal-container border">
@@ -78,7 +75,6 @@
                   onclick="useExampleData('highvariation')">
               </div>
             </div>
-
             <!-- Content for the Input tab -->
             <div class="tabcontent" id="input-content">
               <div class="horizontal-container">
@@ -90,16 +86,16 @@
                 <input class="btn" id="delete-data" type="submit" value="Delete last data point"
                   onclick="deleteInputData()">
               </div>
-              <div id="input-data-table-outer" class="table">
-                <div class="row" id="input-data-table-header">
-                  <div class="cell table_heading">Time</div>
-                  <div class="cell table_heading">Demand</div>
-                </div>
-                <div id="input-data-table">
-                </div>
-              </div>
+              <!-- Table displaying the input data -->
+              <table>
+                <thead>
+                  <tr id="input-data-table-header">
+                  </tr>
+                </thead>
+                <tbody id="input-data-table">
+                </tbody>
+              </table>
             </div>
-
             <!-- Content for the Moving Average tab -->
             <div class="tabcontent" id="ma-content">
               <div class="horizontal-container">
@@ -117,21 +113,21 @@
                   <div id="offset-true">Moving average in period i does not include value of period i (forecast)</div>
                 </div>
               </div>
-              <div id="moving-average-table-outer" class="table">
-                <div class="row" id="moving-average-table-header">
-                  <div class="cell table_heading">Time</div>
-                  <div class="cell table_heading">Moving Average</div>
-                </div>
-                <div id="moving-average-table">
-                </div>
-              </div>
+              <!-- Table displaying the Moving Average data -->
+              <table>
+                <thead>
+                  <tr id="moving-average-table-header">
+                  </tr>
+                </thead>
+                <tbody id="moving-average-table">
+                </tbody>
+              </table>
               <div class="horizontal-container border">
                 The Moving Average represents the unweighted mean of the demands of the previous N periods. If the value
                 for N is too small nervous variations can occur. If it is too big the forecast will only react slowly to
                 changes of the data as new data-points have less impact. It is used for data with a constant level.
               </div>
             </div>
-
             <!-- Content for the Single Exponential Smoothing tab -->
             <div class="tabcontent" id="ses-content">
               <div class="horizontal-container">
@@ -145,24 +141,23 @@
                   value="Calculate Single Exponential Smoothing" onclick="singleExponentialSmoothing()">
               </div>
               <div id="n-value"></div>
-              <div id="single-exponential-smoothing-table-outer" class="table">
-                <div class="row" id="single-exponential-smoothing-table-header">
-                  <div class="cell table_heading">Time</div>
-                  <div class="cell table_heading">Single Exponential Smoothing</div>
-                </div>
-                <div id="single-exponential-smoothing-table">
-                </div>
-              </div>
+              <!-- Table displaying the Single Exponential Smoothing data -->
+              <table>
+                <thead>
+                  <tr id="single-exponential-smoothing-table-header">
+                  </tr>
+                </thead>
+                <tbody id="single-exponential-smoothing-table">
+                </tbody>
+              </table>
               <div class="horizontal-container border">
                 The Single Exponential Smoothing weights the demands of recent periods heavier than more
                 distant ones. The new data-point is weighted with &alpha; (alpha), the forecast of the preceding period
-                is weighted with (1-&alpha;). &alpha; is called the smoothing factor. The forecast is initialized as the 
+                is weighted with (1-&alpha;). &alpha; is called the smoothing factor. The forecast is initialized as the
                 first data-point. It is used for data with a constant level.
               </div>
             </div>
-
             <!-- Content for the Double Exponential Smoothing tab -->
-            <!-- Interfering alpha values in SES and DES -->
             <div class="tabcontent" id="des-content">
               <div class="horizontal-container">
                 <div>&alpha; (alpha) =&nbsp;</div>
@@ -180,14 +175,15 @@
                   value="Calculate Double Exponential Smoothing" onclick="doubleExponentialSmoothing()">
               </div>
               <div id="n-value"></div>
-              <div id="double-exponential-smoothing-table-outer" class="table">
-                <div class="row" id="double-exponential-smoothing-table-header">
-                  <div class="cell table_heading">Time</div>
-                  <div class="cell table_heading">Double Exponential Smoothing</div>
-                </div>
-                <div id="double-exponential-smoothing-table">
-                </div>
-              </div>
+              <!-- Table displaying the Double Exponential Smoothing data -->
+              <table>
+                <thead>
+                  <tr id="double-exponential-smoothing-table-header">
+                  </tr>
+                </thead>
+                <tbody id="double-exponential-smoothing-table">
+                </tbody>
+              </table>
               <div class="horizontal-container border">
                 The forecast of Double Exponential Smoothing not only includes the level of the previous data points,
                 but also the slope between those points. &alpha; is called the data smoothing factor, &beta; is called
@@ -200,6 +196,7 @@
             </div>
           </div>
 
+          <!-- Container holding the general settings -->
           <div class="main-content-settings">
             <div class="big-text">General Settings</div>
             <div class="horizontal-container border">

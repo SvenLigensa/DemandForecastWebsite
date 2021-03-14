@@ -204,3 +204,27 @@ a:hover{
     display: none;
     visibility: hidden;
 }
+
+
+/* Table */
+table{
+    width: 400px;
+    margin: 10px 0;
+}
+table, th, td{
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td{
+    padding: 3px;
+}
+th{
+    text-align: left;
+    background-color: var(--lightgrey);
+}
+tbody tr:nth-child(even){
+    background-color: var(--lightgrey);
+}
+tbody tr:nth-child(odd){
+    background-color: var(--whitegrey);
+}
