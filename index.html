@@ -53,7 +53,7 @@
                 On this website you can play with three simple forecasting methods: the Moving Average, the Single and
                 the Double Exponential Smoothing. More information on each of the methods can be found in the
                 corresponding tabs. Enter your own data or use predefined data. Try different parameters to see how well
-                the predictions represent the data.
+                the predictions represent the data. All values are rounded on two decimal places for clarity reasons.
               </div>
             </div>
             <!-- Content for the Example Data tab -->
@@ -73,6 +73,8 @@
                   onclick="useExampleData('constant')">
                 <img src="img/high-variation.svg" alt="high variation" width="150" height="150"
                   onclick="useExampleData('highvariation')">
+                <img src="img/deep-fall-then-constant.svg" alt="deep fall then constant" width="150" height="150"
+                  onclick="useExampleData('deepfallconstant')">
               </div>
             </div>
             <!-- Content for the Input tab -->
@@ -165,6 +167,9 @@
                 <div>&nbsp;&nbsp;-&nbsp;&nbsp;</div>
                 <div>&beta; (beta) =&nbsp;</div>
                 <div class="stressed-text" id="des-beta-value">0.2</div>
+                <div>&nbsp;&nbsp;-&nbsp;&nbsp;</div>
+                <div>MSE =&nbsp;</div>
+                <div class="stressed-text" id="des-mse-value"></div>
               </div>
               <div class="horizontal-container border">
                 <input class="form-text" type="number" id="set-des-alpha" placeholder="&alpha;" min="0.1" max="1"
@@ -186,12 +191,12 @@
               </table>
               <div class="horizontal-container border">
                 The forecast of Double Exponential Smoothing not only includes the level of the previous data points,
-                but also the slope between those points. &alpha; is called the data smoothing factor, &beta; is called
-                the trend smoothing factor. The base value is computed by weighting the new data-point with &alpha; and
-                the forecast of the preceding period with (1-&alpha;). The slope prediction is computed by weighting the
-                slope-prediction between the last two base values with &beta; and the slope prediction of the last
-                period with (1-&beta;). The forecast is initialized as the first data-point, the slope-predicion is
-                initialized as the slope between the first two data-points. It is used for data with a trend.
+                but also the trend between those points. &alpha; is called the data smoothing factor, &beta; is called
+                the trend smoothing factor. The level value is computed by weighting the new data-point with &alpha; and
+                the forecast of the preceding period with (1-&alpha;). The trend prediction is computed by weighting the
+                trend-prediction between the last two levels with &beta; and the trend prediction of the last
+                period with (1-&beta;). The first level is initialized as the first data-point, the trend-predicion is
+                initialized as the trend between the first two data-points. It is used for data with a trend.
               </div>
             </div>
           </div>
@@ -204,7 +209,12 @@
               <div class="description-text" id="y-axis-description">
                 <div id="y-axis-description-min-max">Y axis scaling from min to max</div>
               </div>
-              <br>
+            </div>
+            <div class="horizontal-container border">
+              <input class="btn" id="toggle-errors" type="submit" value="Show/Hide Errors" onclick="toggleErrors()">
+              <div class="description-text" id="error-description">
+                <div id="error-description">Errors shown/hidden.</div>
+              </div>
             </div>
           </div>
         </div>
