@@ -66,15 +66,15 @@
                 Click on the images to choose.
               </div>
               <div class="horizontal-container">
-                <img src="img/positive-trend.svg" alt="positive trend" width="200" height="200"
+                <img src="img/positive-trend.svg" alt="positive trend" width="150" height="150"
                   onclick="useExampleData('rising')">
-                <img src="img/negative-trend.svg" alt="negative trend" width="200" height="200"
+                <img src="img/negative-trend.svg" alt="negative trend" width="150" height="150"
                   onclick="useExampleData('falling')">
               </div>
               <div class="horizontal-container">
-                <img src="img/constant-niveau.svg" alt="constant niveau" width="200" height="200"
+                <img src="img/constant-niveau.svg" alt="constant niveau" width="150" height="150"
                   onclick="useExampleData('constant')">
-                <img src="img/high-variation.svg" alt="high variation" width="200" height="200"
+                <img src="img/high-variation.svg" alt="high variation" width="150" height="150"
                   onclick="useExampleData('highvariation')">
               </div>
             </div>
@@ -156,8 +156,8 @@
               <div class="horizontal-container border">
                 The Single Exponential Smoothing weights the demands of recent periods heavier than more
                 distant ones. The new data-point is weighted with &alpha; (alpha), the forecast of the preceding period
-                is weighted with (1-&alpha;). &alpha; is called the smoothing factor.
-                It is used for data with a constant level.
+                is weighted with (1-&alpha;). &alpha; is called the smoothing factor. The forecast is initialized as the 
+                first data-point. It is used for data with a constant level.
               </div>
             </div>
 
@@ -194,8 +194,8 @@
                 the trend smoothing factor. The base value is computed by weighting the new data-point with &alpha; and
                 the forecast of the preceding period with (1-&alpha;). The slope prediction is computed by weighting the
                 slope-prediction between the last two base values with &beta; and the slope prediction of the last
-                period
-                with (1-&beta;). It is used for data with a trend.
+                period with (1-&beta;). The forecast is initialized as the first data-point, the slope-predicion is
+                initialized as the slope between the first two data-points. It is used for data with a trend.
               </div>
             </div>
           </div>

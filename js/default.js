@@ -50,26 +50,12 @@ var double_exponential_smoothing = [];
 
 
 // --- --- Functions --- ---
+
 document.getElementById("input-data").addEventListener("keyup", function (e) { if (e.key === "Enter") { addInputData(); } }, false);
 document.getElementById("set-n").addEventListener("keyup", function (e) { if (e.key === "Enter") { movingAverage(); } }, false);
 document.getElementById("set-ses-alpha").addEventListener("keyup", function (e) { if (e.key === "Enter") { singleExponentialSmoothing(); } }, false);
 document.getElementById("set-des-alpha").addEventListener("keyup", function (e) { if (e.key === "Enter") { doubleExponentialSmoothing(); } }, false);
 document.getElementById("set-des-beta").addEventListener("keyup", function (e) { if (e.key === "Enter") { doubleExponentialSmoothing(); } }, false);
-
-/*
-// ### Possible option if multiple elements exist, where the Enter-functionality is needed ###
-// --- Add data when "Enter" is pressed ---
-// --- Create an EventListener for all elements with the class form-text ---
-var inputs = $(".form-text");
-// [... ] converts HTMLCollection to an array
-[...inputs].forEach(function (item, index) {
-    item.addEventListener("keyup", function (e) { if (e.key === "Enter") { pressEnter(item); } }, false);
-});
-// --- Execute the corresponding set- function of the element where Enter is pressed ---
-function pressEnter(element) {
-    $("#set-" + element.id + "").click();
-}
-*/
 
 // #---# General functions #---#
 
@@ -170,20 +156,61 @@ function useExampleData(type) {
         updatePlot();
         switch (type) {
             case "constant":
-                input_data = [106.8, 129.2, 153.0, 149.1, 158.3, 132.9, 149.8, 140.3, 138.3, 152.2, 128.1, 140.5, 147.0, 132.3, 134.0, 127.9, 145.3];
+                input_data = createConstantExample();
                 break;
             case "rising":
-                input_data = [670.00, 699.40, 700.30, 608.18, 600.55, 626.06, 655.80, 687.99, 718.28, 690.11, 700.00, 726.15, 711.85, 662.13, 762.64, 795.00, 780.90, 779.09, 818.00, 801.26, 812.44, 843.64, 855.12, 869.67, 845.00, 855.00, 877.02, 844.68, 814.29, 830.00];
+                input_data = createRisingExample();
                 break;
             case "falling":
-                input_data = [830, 814.29, 844.68, 877.02, 855, 845, 869.67, 855.12, 843.64, 812.44, 801.26, 818, 779.09, 780.9, 795, 762.64, 662.13, 711.85, 700, 690.11, 718.28, 687.99];
+                input_data = createFallingExample();
                 break;
             case "highvariation":
-                input_data = [100, 11, 97, 80, 5, 111, 60, 75, 23, 25, 70];
+                input_data = createHighVariationExample();
         }
         displayData(input_data, "input-data-table");
         updatePlot();
     }
+}
+
+function createConstantExample() {
+    var base_number = Math.floor(Math.random() * 100000) / 100;
+    var offset_number = Math.floor(base_number*0.05);
+    var constant_data = [base_number];
+    for (var i = 1; i < 50; i++){
+        constant_data[i] = Math.round((base_number + Math.random() * offset_number * (1 - 2 * Math.round(Math.random())))*100)/100;
+    }
+    console.log(constant_data);
+    return constant_data;
+}
+
+function createRisingExample() {
+    var base_number = Math.floor(Math.random() * 100000) / 100;
+    var offset_number = Math.floor(base_number / Math.random(Math.floor(base_number)));
+    var rising_data = [base_number];
+    for (var i = 1; i < 50; i++) {
+        rising_data[i] = Math.round((rising_data[i - 1] + Math.random(offset_number))*100)/100;
+    }
+    return rising_data;
+}
+
+function createFallingExample() {
+    var base_number = Math.floor(Math.random() * 100000) / 100;
+    var offset_number = Math.floor(base_number / Math.random(Math.floor(base_number)));
+    var falling_data = [base_number];
+    for (var i = 1; i < 50; i++) {
+        falling_data[i] = Math.round((falling_data[i - 1] - Math.random(offset_number))*100)/100;
+    }
+    return falling_data;
+}
+
+function createHighVariationExample() {
+    var base_number = Math.floor(Math.random() * 100000) / 100;
+    var offset_number = Math.floor(base_number*0.5);
+    var high_variation_data = [base_number];
+    for (var i = 1; i < 50; i++){
+        high_variation_data[i] = Math.round((base_number + Math.random() * offset_number * (1 - 2 * Math.round(Math.random())))*100)/100;
+    }
+    return high_variation_data;
 }
 
 // #---# Plot functions #---#
@@ -467,20 +494,15 @@ function setDesBeta() {
 // --- Calculates the values of the Siingle Exponential Smoothing
 function calculateDoubleExponentialSmoothing() {
 
-    //console.log(des_alpha + ", " + des_beta);
-
-
     // Initialization
     double_exponential_smoothing.push(NaN);
 
     des_a_values.push(input_data[0]);
-
-    // TODO: Null-Wert abfangen!
+    // null-value in input_data[1] is no problem
     des_b_values.push(input_data[1] - input_data[0]);
 
     // Computation
     input_data.forEach(function (item, index) {
-        //console.log("a-values: " + des_a_values + ", b-values: " + des_b_values);
         if (index > 0) {
             des_a_values.push((des_alpha * input_data[index]) + (1 - des_alpha) * (des_a_values[index - 1] + des_b_values[index - 1]));
             des_b_values.push(des_beta * (des_a_values[index] - des_a_values[index - 1]) + (1 - des_beta) * des_b_values[index - 1]);
