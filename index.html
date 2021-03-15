@@ -60,7 +60,8 @@
             <div class="tabcontent" id="examples-content">
               <div class="horizontal-container border">
                 Use different example data to quickly see how the different methods handle different data.
-                Click on the images to choose.
+                Click on the images to choose. Be aware that most example data is generated randomly and 
+                allow for negative values. In the context of demand this is does not make sense.
               </div>
               <div class="horizontal-container">
                 <img src="img/positive-trend.svg" alt="positive trend" width="150" height="150"
@@ -103,6 +104,8 @@
               <div class="horizontal-container">
                 <div>Number of periods: N =&nbsp;</div>
                 <div class="stressed-text" id="n-value">3</div>
+                <div id="moving-average-mse" class="horizontal">
+                </div>
               </div>
               <div class="horizontal-container border">
                 <input class="form-text" type="number" id="set-n" placeholder="N" min="1">
@@ -135,6 +138,8 @@
               <div class="horizontal-container">
                 <div>&alpha; (alpha) =&nbsp;</div>
                 <div class="stressed-text" id="ses-alpha-value">0.2</div>
+                <div id="single-exponential-smoothing-mse" class="horizontal">
+                </div>
               </div>
               <div class="horizontal-container border">
                 <input class="form-text" type="number" id="set-ses-alpha" placeholder="&alpha;" min="0.1" max="1"
@@ -167,9 +172,8 @@
                 <div>&nbsp;&nbsp;-&nbsp;&nbsp;</div>
                 <div>&beta; (beta) =&nbsp;</div>
                 <div class="stressed-text" id="des-beta-value">0.2</div>
-                <div>&nbsp;&nbsp;-&nbsp;&nbsp;</div>
-                <div>MSE =&nbsp;</div>
-                <div class="stressed-text" id="des-mse-value"></div>
+                <div id="double-exponential-smoothing-mse" class="horizontal">
+                </div>
               </div>
               <div class="horizontal-container border">
                 <input class="form-text" type="number" id="set-des-alpha" placeholder="&alpha;" min="0.1" max="1"
@@ -211,9 +215,9 @@
               </div>
             </div>
             <div class="horizontal-container border">
-              <input class="btn" id="toggle-errors" type="submit" value="Show/Hide Errors" onclick="toggleErrors()">
+              <input class="btn" id="toggle-errors" type="submit" value="Show Errors" onclick="toggleErrors()">
               <div class="description-text" id="error-description">
-                <div id="error-description">Errors shown/hidden.</div>
+                <div id="show-errors-false">Errors hidden.</div>
               </div>
             </div>
           </div>

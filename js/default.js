@@ -37,6 +37,7 @@ var moving_average_time = [];
 // Error values
 var moving_average_error = [];
 var moving_average_squared_error = [];
+var moving_average_mse;
 
 // Single Exponential Smoothing
 // Smoothing factor
@@ -47,6 +48,7 @@ var single_exponential_smoothing_time = [];
 // Error values
 var single_exponential_smoothing_error = [];
 var single_exponential_smoothing_squared_error = [];
+var single_exponential_smoothing_mse;
 
 // Double Exponential Smoothing
 // Data smoothing factor
@@ -61,6 +63,7 @@ var double_exponential_smoothing_time = [];
 // Error values
 var double_exponential_smoothing_error = [];
 var double_exponential_smoothing_squared_error = [];
+var double_exponential_smoothing_mse;
 
 // #---# #---# Functions #---# #---#
 
@@ -77,22 +80,6 @@ document.getElementById("set-des-beta").addEventListener("keyup", function (e) {
 function initialize() {
     updatePlot();
     document.getElementById("start").click();
-}
-
-// --- Removes all calculated values and their representation in the tables ---
-function removeAllCalculations() {
-    removeMovingAverage();
-    removeSingleExponentialSmoothing();
-    removeDoubleExponentialSmoothing();
-}
-
-// --- Deletes everything regarding the single exponential smoothing ---
-function removeDoubleExponentialSmoothing() {
-    double_exponential_smoothing = [];
-    des_a_values = [];
-    des_b_values = [];
-    drawGraph(double_exponential_smoothing, double_exponential_smoothing_color);
-    removeTable("double-exponential-smoothing-table");
 }
 
 // --- Adds new value to input_data, displays it in the table, removes all calculations and updates the plot ---
@@ -130,6 +117,13 @@ function deleteInputData() {
     updatePlot();
 }
 
+// --- Removes all calculated values and their representation in the tables ---
+function removeAllCalculations() {
+    removeMovingAverage();
+    removeSingleExponentialSmoothing();
+    removeDoubleExponentialSmoothing();
+}
+
 // --- Manage what tab to show ---
 function showTab(evt, id) {
     // Get all elements with class="tabcontent" and hide them
@@ -153,6 +147,7 @@ function showTab(evt, id) {
 // Creates example data of the given type
 function useExampleData(type) {
     if (type.length > 0) {
+        removeTable("input-data-table");
         removeAllCalculations();
         switch (type) {
             case "constant":
@@ -193,20 +188,20 @@ function createConstantExample() {
 
 function createRisingExample() {
     var base_number = Math.floor(Math.random() * 100000) / 100;
-    var offset_number = Math.floor(base_number / Math.random(Math.floor(base_number)));
+    var offset_number = Math.floor(Math.random() * base_number * 0.5);
     var rising_data = [base_number];
     for (var i = 1; i < 50; i++) {
-        rising_data[i] = Math.round((rising_data[i - 1] + Math.random(offset_number)) * 100) / 100;
+        rising_data[i] = Math.round((rising_data[i - 1] + Math.random() * offset_number) * 100) / 100;
     }
     return rising_data;
 }
 
 function createFallingExample() {
     var base_number = Math.floor(Math.random() * 100000) / 100;
-    var offset_number = Math.floor(base_number / Math.random(Math.floor(base_number)));
+    var offset_number = Math.floor(Math.random() * base_number * 0.1);
     var falling_data = [base_number];
     for (var i = 1; i < 50; i++) {
-        falling_data[i] = Math.round((falling_data[i - 1] - Math.random(offset_number)) * 100) / 100;
+        falling_data[i] = Math.round((falling_data[i - 1] - Math.random() * offset_number) * 100) / 100;
     }
     return falling_data;
 }
@@ -377,23 +372,6 @@ function addColumn(title, vector, time, table_id) {
     }
 }
 
-// TODO: Check if implemented correctly
-function deleteLastColumn(table_id) {
-    var table_header = document.getElementById(table_id + "-header");
-    if (table_header.childElementCount > 0) {
-        table_header.lastChild.remove();
-    }
-    var table = document.getElementById(table_id);
-    var table_rows = Array.from(table.children);
-    if (table_rows.length > 0) {
-        table_rows.forEach(function (item, index) {
-            if (item.childElementCount > 0) {
-                item.lastChild.remove();
-            }
-        })
-    }
-}
-
 // --- Returns a table-head-element containing the given text ---
 function createHeaderCell(text) {
     var text_node = document.createTextNode(text);
@@ -460,6 +438,9 @@ function movingAverage() {
     addColumn("Time", moving_average_time, true, "moving-average-table");
     addColumn("Moving Average", moving_average, false, "moving-average-table");
     updatePlot();
+    // Calculate Errors
+    [moving_average_error, moving_average_squared_error, moving_average_mse] = calculateErrors(moving_average_time, moving_average);
+    showErrors(moving_average_error, moving_average_squared_error, moving_average_mse, "moving-average");
 }
 
 // --- Calculates the moving average of input_data for N periods ---
@@ -531,6 +512,9 @@ function singleExponentialSmoothing() {
     addColumn("Time", single_exponential_smoothing_time, true, "single-exponential-smoothing-table");
     addColumn("Single Exponential Smoothing", single_exponential_smoothing, false, "single-exponential-smoothing-table");
     updatePlot();
+    // Calculate and show the Errors
+    [single_exponential_smoothing_error, single_exponential_smoothing_squared_error, single_exponential_smoothing_mse] = calculateErrors(single_exponential_smoothing_time, single_exponential_smoothing);
+    showErrors(single_exponential_smoothing_error, single_exponential_smoothing_squared_error, single_exponential_smoothing_mse, "single-exponential-smoothing");
 }
 
 // --- Calculates the values of the Single Exponential Smoothing ---
@@ -588,12 +572,9 @@ function doubleExponentialSmoothing() {
     addColumn("Trend", des_b_values, false, "double-exponential-smoothing-table");
     addColumn("Double Exponential Smoothing", double_exponential_smoothing, false, "double-exponential-smoothing-table");
     updatePlot();
-    // Calculate Errors
-    double_exponential_smoothing_error = calculateError(double_exponential_smoothing_time, double_exponential_smoothing);
-    addColumn("Error", double_exponential_smoothing_error, false, "double-exponential-smoothing-table");
-    double_exponential_smoothing_squared_error = calculateSquaredError(double_exponential_smoothing_time, double_exponential_smoothing);
-    addColumn("Squared Error", double_exponential_smoothing_squared_error, false, "double-exponential-smoothing-table");
-    calculateMSE(double_exponential_smoothing_squared_error);
+    // Calculate and show the Errors
+    [double_exponential_smoothing_error, double_exponential_smoothing_squared_error, double_exponential_smoothing_mse] = calculateErrors(double_exponential_smoothing_time, double_exponential_smoothing);
+    showErrors(double_exponential_smoothing_error, double_exponential_smoothing_squared_error, double_exponential_smoothing_mse, "double-exponential-smoothing");
 }
 
 // --- Calculates the values of the Double Exponential Smoothing ---
@@ -614,36 +595,66 @@ function calculateDoubleExponentialSmoothing() {
     double_exponential_smoothing_time = Array.from({ length: double_exponential_smoothing.length }, (_, i) => i + 1);
 }
 
+// --- Deletes everything regarding the single exponential smoothing ---
+function removeDoubleExponentialSmoothing() {
+    double_exponential_smoothing = [];
+    des_a_values = [];
+    des_b_values = [];
+    drawGraph(double_exponential_smoothing, double_exponential_smoothing_color);
+    removeTable("double-exponential-smoothing-table");
+}
+
 // #---# Errors #---#
 
-/* -------------------------------- */
-// TODO: combine functions
-// --- Returns the deviation of the forecast from the demand for each period ---
-function calculateError(x_vec, y_vec) {
-    var output = [];
+// --- Returns the deviation of the forecast from the demand and the squared deviation for each period and the MSE ---
+function calculateErrors(x_vec, y_vec) {
+    var error = new Float64Array(x_vec.length).fill(NaN);
+    var squared_error = new Float64Array(x_vec.length).fill(NaN);
+    var mse, sum_squared_error;
     x_vec.forEach(function (item, index) {
-        output.push(y_vec[index] - input_data[item-1]);
+        error[index] = y_vec[index] - input_data[item - 1];
+        squared_error[index] = error[index] ** 2;
     })
-    return output;
+    var squared_error_no_nans = squared_error.filter(e => !isNaN(e));
+    sum_squared_error = squared_error_no_nans.reduce((total, value) => total + value);
+    mse = (sum_squared_error / squared_error.length);
+    return [error, squared_error, mse];
 }
 
-// --- Returns the squared deviation of the forecast from the demand for each period ---
-function calculateSquaredError(x_vec, y_vec) {
-    return (calculateError(x_vec, y_vec).map(element => element**2));
-}
-
-// --- Calculates and shows the mean of the given vector 
-function calculateMSE(vector) {
-    // Remove NaN values
-    vector = vector.filter(e => !isNaN(e));
-    var sum_squared_error = vector.reduce((total, value) => total + value);
-    var mse = (sum_squared_error/vector.length);
-    $("#des-mse-value").text(d3.format(".6f")(mse));
-}
-/* -------------------------------- */
-
-// TODO
+// --- Toggles the visibility of the Errors ---
 function toggleErrors() {
-    show_errors != show_errors;
-    
+    if (show_errors === false) {
+        show_errors = true;
+        $("#toggle-errors").attr("value", "Hide Errors");
+        $("#error-description").append("<div id='show-errors-true'>Errors shown.</div>");
+        document.getElementById("show-errors-false").remove();
+    }
+    else {
+        show_errors = false;
+        hideMSEs();
+        $("#toggle-errors").attr("value", "Show Errors");
+        $("#error-description").append("<div id='show-errors-false'>Errors hidden.</div>");
+        document.getElementById("show-errors-true").remove();
+    }
+}
+
+// --- Shows the MSE of the given method ---
+function showMSE(method, value) {
+    document.getElementById(method + "-mse").innerHTML = "<div>&nbsp;&nbsp;-&nbsp;&nbsp;MSE =&nbsp;</div><div class='stressed-text'>" + d3.format(".6f")(value) + "</div>";
+}
+
+// --- Hide the MSE ---
+function hideMSEs() {
+    document.getElementById("moving-average-mse").innerHTML = "";
+    document.getElementById("single-exponential-smoothing-mse").innerHTML = "";
+    document.getElementById("double-exponential-smoothing-mse").innerHTML = "";
+}
+
+// --- Shows the errors, if show_errors is true ---
+function showErrors(error_vec, squared_error_vec, mse, method) {
+    if (show_errors) {
+        addColumn("Error", error_vec, false, method+"-table");
+        addColumn("Squared Error", squared_error_vec, false, method+"-table");
+        showMSE(method, mse);
+    }
 }
