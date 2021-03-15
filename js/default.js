@@ -163,8 +163,10 @@ function useExampleData(type) {
                 input_data = createHighVariationExample();
                 break;
             case "deepfallconstant":
-                input_data = new Float64Array(50).fill(1);
-                input_data[0] = 100;
+                input_data.push(100);
+                for (var i = 1; i < 50; i++) {
+                    input_data.push(1);
+                }
                 break;
         }
         input_time = Array.from({ length: input_data.length }, (_, i) => i + 1);
@@ -198,7 +200,7 @@ function createRisingExample() {
 
 function createFallingExample() {
     var base_number = Math.floor(Math.random() * 100000) / 100;
-    var offset_number = Math.floor(Math.random() * base_number * 0.1);
+    var offset_number = Math.floor(Math.random() * base_number * 0.1) + 5;
     var falling_data = [base_number];
     for (var i = 1; i < 50; i++) {
         falling_data[i] = Math.round((falling_data[i - 1] - Math.random() * offset_number) * 100) / 100;
@@ -383,9 +385,15 @@ function createHeaderCell(text) {
 // --- Returns a table-data-element containing the given value ---
 // if time === true, the value is formatted to integer
 function createCell(value, time) {
-    if (time === true) {
+    // Don't show NaN values in the table
+    if (isNaN(Number(value))) {
+        var text_node = document.createTextNode("");
+    }
+    // Display time-data as integer
+    else if (time === true) {
         var text_node = document.createTextNode(d3.format(".0f")(value));
     }
+    // Otherwise display the value rounded to two decimal places
     else {
         var text_node = document.createTextNode(d3.format(".2f")(value));
     }
@@ -438,7 +446,7 @@ function movingAverage() {
     addColumn("Time", moving_average_time, true, "moving-average-table");
     addColumn("Moving Average", moving_average, false, "moving-average-table");
     updatePlot();
-    // Calculate Errors
+    // Calculate and show the Errors
     [moving_average_error, moving_average_squared_error, moving_average_mse] = calculateErrors(moving_average_time, moving_average);
     showErrors(moving_average_error, moving_average_squared_error, moving_average_mse, "moving-average");
 }
