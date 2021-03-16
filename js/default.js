@@ -122,6 +122,7 @@ function removeAllCalculations() {
     removeMovingAverage();
     removeSingleExponentialSmoothing();
     removeDoubleExponentialSmoothing();
+    hideMSEs();
 }
 
 // --- Manage what tab to show ---
@@ -163,6 +164,7 @@ function useExampleData(type) {
                 input_data = createHighVariationExample();
                 break;
             case "deepfallconstant":
+                input_data = [];
                 input_data.push(100);
                 for (var i = 1; i < 50; i++) {
                     input_data.push(1);
@@ -176,8 +178,6 @@ function useExampleData(type) {
     }
 }
 
-/* -------------------------------- */
-// TODO: Combine functions?
 function createConstantExample() {
     var base_number = Math.floor(Math.random() * 100000) / 100;
     var offset_number = Math.floor(base_number * 0.05);
@@ -190,7 +190,7 @@ function createConstantExample() {
 
 function createRisingExample() {
     var base_number = Math.floor(Math.random() * 100000) / 100;
-    var offset_number = Math.floor(Math.random() * base_number * 0.5);
+    var offset_number = Math.floor(Math.random() * base_number * 0.5) + 5;
     var rising_data = [base_number];
     for (var i = 1; i < 50; i++) {
         rising_data[i] = Math.round((rising_data[i - 1] + Math.random() * offset_number) * 100) / 100;
@@ -217,7 +217,6 @@ function createHighVariationExample() {
     }
     return high_variation_data;
 }
-/* -------------------------------- */
 
 // #---# Plot functions #---#
 
@@ -264,9 +263,7 @@ function createNewPlot() {
 }
 
 // TODO --- Draws the legend for the graphs ---
-function showLegend() {
-
-}
+function showLegend() { }
 
 // --- Draws a graph including points and their connection lines
 function drawGraph(x_vec, y_vec, color) {
@@ -644,6 +641,7 @@ function toggleErrors() {
         $("#error-description").append("<div id='show-errors-false'>Errors hidden.</div>");
         document.getElementById("show-errors-true").remove();
     }
+    reloadTables();
 }
 
 // --- Shows the MSE of the given method ---
@@ -658,11 +656,27 @@ function hideMSEs() {
     document.getElementById("double-exponential-smoothing-mse").innerHTML = "";
 }
 
+// --- Reloads the tables to show/hide the error calculations ---
+function reloadTables() {
+    if (moving_average.length > 0) {
+        movingAverage();
+        if (show_errors) { showMSE("moving-average", moving_average_mse); }
+    }
+    if (single_exponential_smoothing.length > 0) {
+        singleExponentialSmoothing();
+        if (show_errors) { showMSE("single-exponential-smoothing", single_exponential_smoothing_mse); }
+    }
+    if (double_exponential_smoothing.length > 0) {
+        doubleExponentialSmoothing();
+        if (show_errors) { showMSE("double-exponential-smoothing", double_exponential_smoothing_mse); }
+    }
+}
+
 // --- Shows the errors, if show_errors is true ---
 function showErrors(error_vec, squared_error_vec, mse, method) {
     if (show_errors) {
-        addColumn("Error", error_vec, false, method+"-table");
-        addColumn("Squared Error", squared_error_vec, false, method+"-table");
+        addColumn("Error", error_vec, false, method + "-table");
+        addColumn("Squared Error", squared_error_vec, false, method + "-table");
         showMSE(method, mse);
     }
 }
