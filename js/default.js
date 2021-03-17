@@ -646,7 +646,7 @@ function toggleErrors() {
 
 // --- Shows the MSE of the given method ---
 function showMSE(method, value) {
-    document.getElementById(method + "-mse").innerHTML = "<div>&nbsp;&nbsp;-&nbsp;&nbsp;MSE =&nbsp;</div><div class='stressed-text'>" + d3.format(".6f")(value) + "</div>";
+    document.getElementById(method + "-mse").innerHTML = "<div>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;MSE =&nbsp;</div><div class='stressed-text'>" + d3.format(".4f")(value) + "</div>";
 }
 
 // --- Hide the MSE ---
