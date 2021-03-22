@@ -13,16 +13,16 @@
   <header>
     <nav class="navbar">
       <ul class="navlist">
-        <li><a href="#DemandForecast">Demand Forecast</a></li>
+        <li><a href="#time_series">Quantitative - Time Series Forecasting</a></li>
       </ul>
     </nav>
     <div class="welcome">
-      <h1>Welcome To My First Website</h1>
+      <h1>Demand Forecasting</h1>
     </div>
   </header>
   <main>
-    <section class="basic-section" id="DemandForecast">
-      <h1 id="title">Demand Forecast</h1>
+    <section class="basic-section" id="time_series">
+      <h1 id="title">Quantitative - Time Series Forecasting</h1>
       <hr>
       <div class="horizontal">
         <div class="vertical">
@@ -199,7 +199,8 @@
                 the forecast of the preceding period with (1-&alpha;). The trend prediction is computed by weighting the
                 trend-prediction between the last two levels with &beta; and the trend prediction of the last
                 period with (1-&beta;). The first level is initialized as the first data-point, the trend-predicion is
-                initialized as the trend between the first two data-points. It is used for data with a trend.
+                initialized as the average of the first three trends (if at least four data-points exist; this approach 
+                prevents the first trend from having an extraordinary impact). It is used for data with a trend.
               </div>
             </div>
           </div>

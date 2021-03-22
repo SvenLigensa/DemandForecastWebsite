@@ -112,7 +112,13 @@ function addInputData() {
 function deleteInputData() {
     input_data.pop();
     input_time.pop();
-    removeLastRow("input-data-table");
+    console.log(input_data.length === 0);
+    if (input_data.length > 0) {
+        removeLastRow("input-data-table");
+    }
+    else {
+        removeTable("input-data-table");
+    }
     removeAllCalculations();
     updatePlot();
 }
@@ -590,7 +596,16 @@ function calculateDoubleExponentialSmoothing() {
     // Initialize the a-value
     des_a_values[0] = input_data[0];
     // Initialize the b-value
-    des_b_values[0] = input_data[1] - input_data[0];
+    var mean_trend = 0;
+    var mean_trend_length = 0;
+    for (var i = 1; i < 4; i++) {
+        if (input_data[i] != null) {
+            mean_trend += input_data[i] - input_data[i - 1];
+            mean_trend_length++;
+        } else { break; }
+    }
+    des_b_values[0] = mean_trend / mean_trend_length;
+    console.log(des_b_values[0]);
     // Computation
     for (var i = 1; i < input_data.length + 1; i++) {
         des_a_values[i] = des_alpha * input_data[i] + (1 - des_alpha) * (des_a_values[i - 1] + des_b_values[i - 1]);
@@ -621,8 +636,10 @@ function calculateErrors(x_vec, y_vec) {
         squared_error[index] = error[index] ** 2;
     })
     var squared_error_no_nans = squared_error.filter(e => !isNaN(e));
-    sum_squared_error = squared_error_no_nans.reduce((total, value) => total + value);
-    mse = (sum_squared_error / squared_error.length);
+    if (squared_error_no_nans.length > 0) {
+        sum_squared_error = squared_error_no_nans.reduce((total, value) => total + value);
+    }
+    mse = (sum_squared_error / squared_error_no_nans.length);
     return [error, squared_error, mse];
 }
 
